@@ -160,5 +160,25 @@ data/         运行时数据（chroma 向量库 / 日志）
 
 | 任务 | 优先级 | 说明 |
 |------|--------|------|
-| Twitter/X 适配器 | 📅 Week 2 | Tweepy OAuth 1.0a |
-| MCP 协议 | 🔮 v2 | 架构已预留 |
+| 🐦 Twitter/X 适配器 | 📅 Week 2 | Tweepy OAuth 1.0a，发推/发线程，集成到 Publisher |
+| 🔮 MCP 协议 | 🔮 v2 | 架构已预留 |
+
+### 下一步行动计划（2026-07-16 制定）
+
+> **三步走，按顺序执行：**
+
+**Step 1: 🍽️ Dogfooding — 跑通真实全流程**
+- 用 AgentCrew 写一篇推广自己的技术文章
+- `python3 -m cli.main write generate --topic "AI 自动内容营销工具 AgentCrew 实战" --platform juejin --rag`
+- 先在掘金 dry-run，确认无误后正式发布
+- 目的：验证 mock 测试覆盖不到的真实环境问题
+
+**Step 2: 🐦 Twitter/X 适配器**
+- Tweepy OAuth 1.0a 认证
+- 实现 `TwitterAdapter(BasePlatformAdapter)`
+- 发推 / 发线程 / 媒体上传
+- 集成到 Publisher Agent + CLI
+
+**Step 3: 🔮 MCP 协议**
+- 为 Agent 提供 MCP 工具接入能力
+- 架构已预留，按 v2 计划升级
