@@ -95,6 +95,9 @@ class Orchestrator:
             - "write": WriterAgent only
             - "publish": PublisherAgent only
             - "write_and_publish": Writer + Publisher in sequence
+            - "analyze": AnalystAgent only
+            - "report": AnalystAgent only
+            - "recommend": AnalystAgent only
             - "schedule": Scheduler only
         """
         started_at = datetime.now()
@@ -166,6 +169,11 @@ class Orchestrator:
                 # Schedule is handled by Scheduler, just ack
                 pass
 
+            elif task.task_type in ("analyze", "report", "recommend"):
+                agent = self.agents["analyst"]
+                result = agent.execute(task)
+                results["analyst"] = result
+
             else:
                 raise ValueError(f"Unknown task_type: {task.task_type}")
 
@@ -232,6 +240,9 @@ class Orchestrator:
             "write": ["writer"],
             "publish": ["publisher"],
             "write_and_publish": ["writer", "publisher"],
+            "analyze": ["analyst"],
+            "report": ["analyst"],
+            "recommend": ["analyst"],
             "schedule": [],
         }
         return mapping.get(task_type, [])

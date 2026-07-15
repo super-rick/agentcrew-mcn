@@ -35,6 +35,7 @@ from cli.write import write_group
 from cli.publish import publish_group
 from cli.schedule import schedule_group
 from cli.rag_cmd import rag_group
+from cli.analyst import analyst_group
 
 
 def load_config(config_path: str) -> dict:
@@ -63,10 +64,11 @@ def load_config(config_path: str) -> dict:
 
 
 def setup_orchestrator(config: dict) -> tuple:
-    """Initialize all components and return (orchestrator, writer, publisher)."""
+    """Initialize all components and return (orchestrator, writer, publisher, kb, retriever, analyst)."""
     from llm.client import LLMClient, LLMConfig
     from agents.writer import WriterAgent
     from agents.publisher import PublisherAgent
+    from agents.analyst import AnalystAgent
     from rag.embedder import DeepSeekEmbedder
     from rag.knowledge_base import KnowledgeBase
     from orchestrator.manager import Orchestrator
@@ -132,12 +134,20 @@ def setup_orchestrator(config: dict) -> tuple:
         except ImportError as e:
             print(f"  [WARN] Platform '{platform_name}' not loaded: {e}", file=sys.stderr)
 
+    # --- Analyst Agent (depends on publisher for history) ---
+    analyst = AnalystAgent(
+        llm_client=llm_client,
+        config=config.get("agents", {}).get("analyst", {}),
+        publisher_agent=publisher,
+    )
+
     # --- Orchestrator ---
     orchestrator = Orchestrator(config=config.get("orchestrator", {}))
     orchestrator.register_agent(writer)
     orchestrator.register_agent(publisher)
+    orchestrator.register_agent(analyst)
 
-    return orchestrator, writer, publisher, kb, retriever
+    return orchestrator, writer, publisher, kb, retriever, analyst
 
 
 @click.group()
@@ -163,10 +173,11 @@ def main(ctx, config):
 
     # Setup orchestrator and components (lazy)
     if cfg:
-        orch, writer, publisher, kb, retriever = setup_orchestrator(cfg)
+        orch, writer, publisher, kb, retriever, analyst = setup_orchestrator(cfg)
         ctx.obj["orchestrator"] = orch
         ctx.obj["writer"] = writer
         ctx.obj["publisher"] = publisher
+        ctx.obj["analyst"] = analyst
         ctx.obj["kb"] = kb
         ctx.obj["retriever"] = retriever
 
@@ -176,6 +187,7 @@ main.add_command(write_group, name="write")
 main.add_command(publish_group, name="publish")
 main.add_command(schedule_group, name="schedule")
 main.add_command(rag_group, name="rag")
+main.add_command(analyst_group, name="analyst")
 
 if __name__ == "__main__":
     main()

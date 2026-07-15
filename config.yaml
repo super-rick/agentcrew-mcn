@@ -17,6 +17,9 @@ agents:
   publisher:
     enabled: true
     default_platforms: [juejin]
+  analyst:
+    enabled: true
+    default_days: 7
 
 platforms:
   juejin:
