@@ -1,3 +1,1 @@
-"""Dashboard module."""
-
-__all__: list[str] = []
+"""Dashboard package for AgentCrew — Streamlit web UI."""

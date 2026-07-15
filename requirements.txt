@@ -22,9 +22,11 @@ pytest-asyncio>=0.23.0
 black>=24.0.0
 ruff>=0.1.0
 
+# Dashboard
+streamlit>=1.28.0
+pandas>=2.0.0
+plotly>=5.0.0
+
 # Platform-specific (install when needed)
 # tweepy>=4.14.0       # X/Twitter
 # playwright>=1.40.0   # 知乎 (browser automation)
-# streamlit>=1.28.0    # Dashboard
-# pandas>=2.0.0
-# plotly>=5.0.0
