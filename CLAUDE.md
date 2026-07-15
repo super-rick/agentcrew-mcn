@@ -34,6 +34,9 @@ python -m cli.main rag ingest --file article.md --source blog
 python -m cli.main rag search --query "Python 异步编程"
 python -m cli.main rag stats
 
+# Dashboard
+streamlit run dashboard/app.py
+
 # 测试
 python -m pytest tests/ -v
 python -m pytest tests/test_agents/test_writer.py -v
@@ -107,7 +110,7 @@ platforms/    各平台适配器（可插拔）
 rag/          RAG 知识库
 llm/          LLM Client（OpenAI 兼容，对接 DeepSeek）
 cli/          Click CLI 命令
-dashboard/    Streamlit（Week 4）
+dashboard/    Streamlit Web 面板（4 页面：总览/发布分析/AI 分析/系统状态）
 data/         运行时数据（chroma 向量库 / 日志）
 ```
 
@@ -151,11 +154,11 @@ data/         运行时数据（chroma 向量库 / 日志）
 | RAG 模块 | ✅ | DeepSeek Embedding + ChromaDB，6 个测试通过 |
 | CLI 命令 | ✅ | write / publish / schedule / rag 四组命令 |
 | 测试套件 | ✅ | 88 passed, 0 failed |
+| Dashboard | ✅ v0.2 | Streamlit Web 面板：总览/发布分析/AI 分析/系统状态 4 页面 |
 
 ### 待开发
 
 | 任务 | 优先级 | 说明 |
 |------|--------|------|
 | Twitter/X 适配器 | 📅 Week 2 | Tweepy OAuth 1.0a |
-| Dashboard | 📅 Week 4 | Streamlit 可视化面板 |
 | MCP 协议 | 🔮 v2 | 架构已预留 |
