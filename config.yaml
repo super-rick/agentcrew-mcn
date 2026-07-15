@@ -20,6 +20,7 @@ agents:
   analyst:
     enabled: true
     default_days: 7
+    history_file: data/post_history.json
 
 platforms:
   juejin:

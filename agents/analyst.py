@@ -7,16 +7,17 @@ Analyst Agent — AI 数据分析员工。
 2. 报告生成（report）— 调用 LLM 生成可读的效果报告
 3. 策略建议（recommend）— 基于数据生成内容策略优化建议
 
+数据源：直接读取 data/post_history.json（独立于 PublisherAgent）。
 核心流程：
     execute(task) →
-      根据 task_type:
-        "analyze"   → _collect_data → _calculate_stats → 返回 AnalysisResult
-        "report"    → analyze 数据 → LLM → 生成报告文本
-        "recommend" → analyze 数据 → LLM → 生成策略建议
+      task.params.action: "analyze" | "report" | "recommend"
+      → _load_history() → _filter → _calculate_metrics → (LLM 可选) → TaskResult
 """
 
+import json
 from collections import defaultdict
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 from agents.base import BaseAgent, Task, TaskResult
@@ -24,7 +25,11 @@ from llm.client import LLMClient
 
 
 class AnalystAgent(BaseAgent):
-    """Content performance analysis agent — the AI data analyst employee."""
+    """Content performance analysis agent — the AI data analyst employee.
+
+    Independent of PublisherAgent — reads post history directly from the
+    shared history file (data/post_history.json).
+    """
 
     name = "analyst"
     description = "负责内容效果数据分析、报告生成和策略优化建议"
@@ -33,10 +38,16 @@ class AnalystAgent(BaseAgent):
         self,
         llm_client: LLMClient,
         config: dict | None = None,
-        publisher_agent: BaseAgent | None = None,
     ):
         super().__init__(llm_client, config)
-        self.publisher_agent = publisher_agent
+        self._history_file: str = (
+            config.get("history_file", "data/post_history.json")
+            if config
+            else "data/post_history.json"
+        )
+        self._default_days: int = (
+            config.get("default_days", 7) if config else 7
+        )
 
     def get_system_prompt(self) -> str:
         return (
@@ -52,102 +63,112 @@ class AnalystAgent(BaseAgent):
         """Execute an analyst task.
 
         Task params:
-            task_type (str): analyze | report | recommend
-            days (int): 分析最近多少天的数据，默认 7
-            platforms (list[str], optional): 指定平台过滤
+            action (str): analyze | report | recommend (default: analyze)
+            days (int): 分析最近多少天的数据，默认取 config.default_days (7)
+            platforms (list[str], optional): 按平台过滤
         """
         started_at = datetime.now()
-        task_type = task.task_type
-        days = task.params.get("days", 7)
+        action = task.params.get("action", "analyze")
+        days = task.params.get("days", self._default_days)
         platforms = task.params.get("platforms")
 
         try:
-            # Step 1: Collect and aggregate data
-            history = self._get_post_history()
+            # Step 1: Collect and filter data
+            history = self._load_history()
             filtered = self._filter_by_days(history, days)
             if platforms:
                 filtered = [r for r in filtered if r.get("platform") in platforms]
 
+            # Step 2: Calculate metrics
             analysis = self._calculate_metrics(filtered, days)
 
-            if task_type == "analyze":
+            if action == "analyze":
                 completed_at = datetime.now()
-                duration = (completed_at - started_at).total_seconds()
                 return TaskResult(
                     task_id=task.task_id,
                     success=True,
                     data={
-                        "analysis_type": "analyze",
+                        "action": "analyze",
                         "period_days": days,
                         **analysis,
                     },
                     started_at=started_at,
                     completed_at=completed_at,
-                    duration_seconds=duration,
+                    duration_seconds=(completed_at - started_at).total_seconds(),
                     agent_name=self.name,
                 )
 
-            elif task_type == "report":
+            elif action == "report":
                 report_text = self._generate_report(analysis)
                 completed_at = datetime.now()
-                duration = (completed_at - started_at).total_seconds()
                 return TaskResult(
                     task_id=task.task_id,
                     success=True,
                     data={
-                        "analysis_type": "report",
+                        "action": "report",
                         "period_days": days,
                         "report": report_text,
                         **analysis,
                     },
                     started_at=started_at,
                     completed_at=completed_at,
-                    duration_seconds=duration,
+                    duration_seconds=(completed_at - started_at).total_seconds(),
                     agent_name=self.name,
                 )
 
-            elif task_type == "recommend":
+            elif action == "recommend":
                 recommend_text = self._generate_recommendations(analysis)
                 completed_at = datetime.now()
-                duration = (completed_at - started_at).total_seconds()
                 return TaskResult(
                     task_id=task.task_id,
                     success=True,
                     data={
-                        "analysis_type": "recommend",
+                        "action": "recommend",
                         "period_days": days,
                         "recommendations": recommend_text,
                         **analysis,
                     },
                     started_at=started_at,
                     completed_at=completed_at,
-                    duration_seconds=duration,
+                    duration_seconds=(completed_at - started_at).total_seconds(),
                     agent_name=self.name,
                 )
 
             else:
-                raise ValueError(f"Unknown task_type for analyst: {task_type}")
+                raise ValueError(
+                    f"Unknown action for analyst: {action!r}. "
+                    f"Expected: analyze, report, recommend"
+                )
 
         except Exception as e:
             completed_at = datetime.now()
-            duration = (completed_at - started_at).total_seconds()
             return TaskResult(
                 task_id=task.task_id,
                 success=False,
                 error_message=str(e),
                 started_at=started_at,
                 completed_at=completed_at,
-                duration_seconds=duration,
+                duration_seconds=(completed_at - started_at).total_seconds(),
                 agent_name=self.name,
             )
 
-    # ── Data Collection ─────────────────────────────────────
+    # ── Data Loading ────────────────────────────────────────
 
-    def _get_post_history(self) -> list[dict]:
-        """Retrieve post history from publisher agent or fallback file."""
-        if self.publisher_agent and hasattr(self.publisher_agent, "get_post_history"):
-            return self.publisher_agent.get_post_history(limit=500)
-        return []
+    def _load_history(self) -> list[dict]:
+        """Load post history from the shared history file.
+
+        Independent of PublisherAgent — reads directly from the JSON file
+        that PublisherAgent writes to. Returns empty list if the file
+        doesn't exist or is malformed (first run, no posts yet).
+        """
+        path = Path(self._history_file)
+        if not path.exists():
+            return []
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError):
+            return []
 
     @staticmethod
     def _filter_by_days(records: list[dict], days: int) -> list[dict]:
@@ -155,7 +176,7 @@ class AnalystAgent(BaseAgent):
         if not records:
             return []
         cutoff = datetime.now() - timedelta(days=days)
-        result = []
+        result: list[dict] = []
         for r in records:
             posted_str = r.get("posted_at")
             if not posted_str:
@@ -177,7 +198,8 @@ class AnalystAgent(BaseAgent):
             total_posts, success_count, fail_count, success_rate
             platform_stats: [{platform, total, success, fail, rate}, ...]
             daily_counts: [{date, total, success, fail}, ...]
-            recent_fails: [failed records, ...]
+            recent_fails: [{platform, error, posted_at}, ...]
+            error_summary: {error_type: count, ...}
         """
         total = len(records)
         success = sum(1 for r in records if r.get("success"))
@@ -196,7 +218,7 @@ class AnalystAgent(BaseAgent):
             else:
                 platform_buckets[plat]["fail"] += 1
 
-        platform_stats = []
+        platform_stats: list[dict] = []
         for plat, pb in sorted(platform_buckets.items()):
             p_rate = (pb["success"] / pb["total"] * 100) if pb["total"] else 0.0
             platform_stats.append({
@@ -207,7 +229,7 @@ class AnalystAgent(BaseAgent):
                 "success_rate": round(p_rate, 1),
             })
 
-        # Daily counts (last `days` days, fill gaps with zero)
+        # Daily counts (fill gaps with zero)
         now = datetime.now()
         daily_map: dict[str, dict] = defaultdict(
             lambda: {"total": 0, "success": 0, "fail": 0}
@@ -226,7 +248,7 @@ class AnalystAgent(BaseAgent):
             except (ValueError, TypeError):
                 continue
 
-        daily_counts = []
+        daily_counts: list[dict] = []
         for i in range(days - 1, -1, -1):
             day_label = (now - timedelta(days=i)).strftime("%Y-%m-%d")
             d = daily_map.get(day_label, {"total": 0, "success": 0, "fail": 0})
@@ -248,7 +270,7 @@ class AnalystAgent(BaseAgent):
             if not r.get("success")
         ][-5:]
 
-        # Count errors by type for common failures
+        # Error type summary
         error_counts: dict[str, int] = defaultdict(int)
         for r in records:
             if not r.get("success") and r.get("error_message"):
@@ -269,7 +291,7 @@ class AnalystAgent(BaseAgent):
             ),
         }
 
-    # ── LLM-powered generation ──────────────────────────────
+    # ── LLM-powered Generation ──────────────────────────────
 
     def _generate_report(self, metrics: dict[str, Any]) -> str:
         """Generate a human-readable performance report via LLM."""

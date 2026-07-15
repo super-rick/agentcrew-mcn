@@ -134,11 +134,10 @@ def setup_orchestrator(config: dict) -> tuple:
         except ImportError as e:
             print(f"  [WARN] Platform '{platform_name}' not loaded: {e}", file=sys.stderr)
 
-    # --- Analyst Agent (depends on publisher for history) ---
+    # --- Analyst Agent (independent — reads post history from file) ---
     analyst = AnalystAgent(
         llm_client=llm_client,
         config=config.get("agents", {}).get("analyst", {}),
-        publisher_agent=publisher,
     )
 
     # --- Orchestrator ---

@@ -2,10 +2,10 @@
 CLI — analyst commands.
 
 Usage:
-    agent-crew analyst analyze [--days 7] [--platform juejin]
-    agent-crew analyst report [--days 7]
-    agent-crew analyst recommend [--days 14]
-    agent-crew analyst history [--limit 20]
+    agent-crew analyst analyze  --days 7 --platform juejin
+    agent-crew analyst report    --days 7
+    agent-crew analyst recommend --days 14
+    agent-crew analyst history   --limit 20
 """
 
 import click
@@ -33,11 +33,11 @@ def analyze(ctx, days, platform):
         console.print("[red]❌ Orchestrator 未初始化。请检查 config.yaml。[/red]")
         return
 
-    params = {"days": days}
+    params = {"action": "analyze", "days": days}
     if platform:
         params["platforms"] = list(platform)
 
-    console.print(f"\n[bold]📊  正在分析发布效果...[/bold]")
+    console.print("\n[bold]📊  正在分析发布效果...[/bold]")
     console.print(f"  [dim]统计周期:[/dim] 最近 {days} 天")
     if platform:
         console.print(f"  [dim]平台过滤:[/dim] {', '.join(platform)}")
@@ -45,7 +45,7 @@ def analyze(ctx, days, platform):
 
     with console.status("[bold blue]正在计算指标...[/bold blue]", spinner="dots"):
         task = orchestrator.create_task(
-            task_type="analyze",
+            task_type="analyst",
             params=params,
         )
         result = orchestrator.execute_pipeline(task)
@@ -83,13 +83,14 @@ def analyze(ctx, days, platform):
         table.add_column("成功率", justify="right")
 
         for ps in data["platform_stats"]:
-            rate_style = "green" if ps["success_rate"] >= 80 else "yellow" if ps["success_rate"] >= 50 else "red"
+            rate = ps["success_rate"]
+            rate_style = "green" if rate >= 80 else "yellow" if rate >= 50 else "red"
             table.add_row(
                 ps["platform"],
                 str(ps["total"]),
                 str(ps["success"]),
                 str(ps["fail"]),
-                f"[{rate_style}]{ps['success_rate']}%[/{rate_style}]",
+                f"[{rate_style}]{rate}%[/{rate_style}]",
             )
         console.print(table)
 
@@ -115,8 +116,8 @@ def report(ctx, days):
 
     with console.status("[bold blue]正在调用 AI 生成报告...[/bold blue]", spinner="dots"):
         task = orchestrator.create_task(
-            task_type="report",
-            params={"days": days},
+            task_type="analyst",
+            params={"action": "report", "days": days},
         )
         result = orchestrator.execute_pipeline(task)
 
@@ -151,8 +152,8 @@ def recommend(ctx, days):
 
     with console.status("[bold blue]正在调用 AI 分析...[/bold blue]", spinner="dots"):
         task = orchestrator.create_task(
-            task_type="recommend",
-            params={"days": days},
+            task_type="analyst",
+            params={"action": "recommend", "days": days},
         )
         result = orchestrator.execute_pipeline(task)
 
