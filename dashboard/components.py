@@ -63,7 +63,7 @@ def post_history_table(records: list[dict], limit: int = 20) -> None:
         rows.append({
             "时间": _fmt_time(r.get("posted_at", "")),
             "平台": r.get("platform", "?"),
-            "标题": r.get("title", r.get("post_id", "-"))[:40],
+            "标题": (r.get("title") or r.get("post_id") or "-")[:40],
             "状态": "✅" if r.get("success") else "❌",
             "链接": r.get("post_url", "") if r.get("success") else r.get("error_message", ""),
         })
