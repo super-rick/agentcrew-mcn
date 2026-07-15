@@ -52,7 +52,7 @@ make lint
 |-------|------|--------|
 | Writer Agent | 内容生成（调用 LLM + RAG + Skills） | ✅ v0.1 |
 | Publisher Agent | 跨平台内容发布（注册多个适配器） | ✅ v0.1 |
-| Analyst Agent | 效果分析、策略优化 | 📅 v0.2 |
+| Analyst Agent | 效果分析、策略优化 | ✅ v0.2 |
 
 每个 Agent 继承 `BaseAgent`（`agents/base.py`），拥有独立的 Tool 和 Skill 注册表。
 
@@ -134,3 +134,31 @@ data/         运行时数据（chroma 向量库 / 日志）
 - `conftest.py` 提供 `mock_llm_client` 和 `mock_web_search`（autouse）fixtures
 - 集成测试在 `tests/test_integration/`，测试 Orchestrator 编排完整 pipeline
 - 平台适配器测试需 mock 外部 API
+
+## 当前进度 / Current Progress
+
+> **每次完成阶段性工作后更新此段。** 新 session 从这里开始，无需重新调查。
+
+### 已完成
+
+| 模块 | 状态 | 说明 |
+|------|------|------|
+| Writer Agent | ✅ v0.1 | 内容生成（LLM + RAG + Skills），7 个测试通过 |
+| Publisher Agent | ✅ v0.1 | 跨平台发布（掘金 API + 知乎 Playwright），适配器模式可插拔 |
+| Analyst Agent | ✅ v0.2 | 效果分析（读取 post_history.json，report/recommend/rank），21 个测试通过 |
+| 掘金适配器 | ✅ | Cookie 认证，API 发文章/沸点 |
+| 知乎适配器 | ✅ | Playwright 浏览器自动化，Cookie 持久化 |
+| RAG 模块 | ✅ | DeepSeek Embedding + ChromaDB，6 个测试通过 |
+| CLI 命令 | ✅ | write / publish / schedule / rag 四组命令 |
+
+### 待修复
+
+- `test_post_history`：PublisherAgent 单例导致 post_history 跨测试累积（87 pass / 1 fail）
+
+### 待开发
+
+| 任务 | 优先级 | 说明 |
+|------|--------|------|
+| Twitter/X 适配器 | 📅 Week 2 | Tweepy OAuth 1.0a |
+| Dashboard | 📅 Week 4 | Streamlit 可视化面板 |
+| MCP 协议 | 🔮 v2 | 架构已预留 |
