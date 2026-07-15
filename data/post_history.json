@@ -34,5 +34,23 @@
     "error_message": null,
     "posted_at": "2026-07-16T00:54:23.135946",
     "metrics": {}
+  },
+  {
+    "success": true,
+    "platform": "mock_test",
+    "post_id": "[DRY-RUN]",
+    "post_url": "[DRY-RUN] would post to mock_test",
+    "error_message": null,
+    "posted_at": "2026-07-16T02:41:57.601384",
+    "metrics": {}
+  },
+  {
+    "success": true,
+    "platform": "mock_test",
+    "post_id": "[DRY-RUN]",
+    "post_url": "[DRY-RUN] would post to mock_test",
+    "error_message": null,
+    "posted_at": "2026-07-16T02:41:57.603011",
+    "metrics": {}
   }
 ]

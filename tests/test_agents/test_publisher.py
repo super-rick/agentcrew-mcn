@@ -1,6 +1,8 @@
 from __future__ import annotations
 """Tests for the Publisher Agent."""
 
+import os
+import tempfile
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,6 +10,16 @@ import pytest
 from agents.publisher import PublisherAgent
 from agents.base import Task
 from platforms.base import BasePlatformAdapter, ContentPost, PostResult
+
+
+@pytest.fixture
+def isolated_history_file():
+    """Provide a temp history file path, clean up after test."""
+    fd, path = tempfile.mkstemp(suffix=".json", prefix="test_pub_hist_")
+    os.close(fd)
+    yield path
+    if os.path.exists(path):
+        os.remove(path)
 
 
 class MockPlatform(BasePlatformAdapter):
@@ -59,8 +71,8 @@ class TestPublisherAgent:
         assert "mock" in pub.list_platforms()
         assert pub.get_platform("mock") == mock_adapter
 
-    def test_execute_dry_run(self, mock_llm_client):
-        pub = PublisherAgent(mock_llm_client)
+    def test_execute_dry_run(self, mock_llm_client, isolated_history_file):
+        pub = PublisherAgent(mock_llm_client, config={"history_file": isolated_history_file})
         pub.register_platform("mock", MockPlatform())
 
         task = Task(
@@ -77,8 +89,8 @@ class TestPublisherAgent:
         assert result.data["dry_run"] is True
         assert result.data["succeeded"] == 1
 
-    def test_execute_real_publish(self, mock_llm_client):
-        pub = PublisherAgent(mock_llm_client)
+    def test_execute_real_publish(self, mock_llm_client, isolated_history_file):
+        pub = PublisherAgent(mock_llm_client, config={"history_file": isolated_history_file})
         pub.register_platform("mock", MockPlatform())
 
         task = Task(
@@ -94,8 +106,8 @@ class TestPublisherAgent:
         assert result.success
         assert result.data["succeeded"] == 1
 
-    def test_execute_failing_platform(self, mock_llm_client):
-        pub = PublisherAgent(mock_llm_client)
+    def test_execute_failing_platform(self, mock_llm_client, isolated_history_file):
+        pub = PublisherAgent(mock_llm_client, config={"history_file": isolated_history_file})
         pub.register_platform("failing", FailingPlatform())
 
         task = Task(
@@ -132,8 +144,8 @@ class TestPublisherAgent:
         assert not result.success
         assert "Invalid content" in (result.error_message or "")
 
-    def test_content_from_string(self, mock_llm_client):
-        pub = PublisherAgent(mock_llm_client)
+    def test_content_from_string(self, mock_llm_client, isolated_history_file):
+        pub = PublisherAgent(mock_llm_client, config={"history_file": isolated_history_file})
         pub.register_platform("mock", MockPlatform())
 
         task = Task(
@@ -153,8 +165,8 @@ class TestPublisherAgent:
         with pytest.raises(KeyError, match="not registered"):
             pub.get_platform("nonexistent")
 
-    def test_post_history(self, mock_llm_client):
-        pub = PublisherAgent(mock_llm_client)
+    def test_post_history(self, mock_llm_client, isolated_history_file):
+        pub = PublisherAgent(mock_llm_client, config={"history_file": isolated_history_file})
         pub.register_platform("mock", MockPlatform())
 
         assert len(pub.get_post_history()) == 0
