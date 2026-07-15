@@ -150,10 +150,7 @@ data/         运行时数据（chroma 向量库 / 日志）
 | 知乎适配器 | ✅ | Playwright 浏览器自动化，Cookie 持久化 |
 | RAG 模块 | ✅ | DeepSeek Embedding + ChromaDB，6 个测试通过 |
 | CLI 命令 | ✅ | write / publish / schedule / rag 四组命令 |
-
-### 待修复
-
-- `test_post_history`：PublisherAgent 单例导致 post_history 跨测试累积（87 pass / 1 fail）
+| 测试套件 | ✅ | 88 passed, 0 failed |
 
 ### 待开发
 
