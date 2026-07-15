@@ -1,0 +1,129 @@
+from __future__ import annotations
+"""Integration tests — end-to-end pipeline verification."""
+
+from unittest.mock import MagicMock, patch
+
+from agents.base import Task
+from agents.writer import WriterAgent
+from agents.publisher import PublisherAgent
+from orchestrator.manager import Orchestrator
+
+
+class TestPipeline:
+    """End-to-end pipeline integration tests."""
+
+    def test_write_only_pipeline(self, mock_llm_client):
+        """Test 'write' task type through orchestrator."""
+        writer = WriterAgent(mock_llm_client)
+        publisher = PublisherAgent(mock_llm_client)
+
+        orchestrator = Orchestrator()
+        orchestrator.register_agent(writer)
+        orchestrator.register_agent(publisher)
+
+        task = orchestrator.create_task(
+            task_type="write",
+            params={"topic": "测试话题", "style": "technical", "enable_rag": False},
+        )
+        result = orchestrator.execute_pipeline(task)
+
+        assert result.success
+        assert result.task_type == "write"
+        assert "writer" in result.results
+        assert result.results["writer"].success
+
+    def test_publish_dry_run_pipeline(self, mock_llm_client):
+        """Test 'publish' dry-run through orchestrator."""
+        from platforms.base import BasePlatformAdapter, ContentPost, PostResult
+
+        class MockPlatform(BasePlatformAdapter):
+            platform_name = "mock_test"
+            def authenticate(self): return True
+            def post(self, content): return PostResult(success=True, platform="mock_test", post_id="1")
+
+        writer = WriterAgent(mock_llm_client)
+        publisher = PublisherAgent(mock_llm_client)
+        publisher.register_platform("mock_test", MockPlatform())
+
+        orchestrator = Orchestrator()
+        orchestrator.register_agent(writer)
+        orchestrator.register_agent(publisher)
+
+        task = orchestrator.create_task(
+            task_type="publish",
+            params={
+                "content": {"text": "Test content"},
+                "platforms": ["mock_test"],
+                "dry_run": True,
+            },
+        )
+        result = orchestrator.execute_pipeline(task)
+
+        assert result.success
+        assert "publisher" in result.results
+
+    def test_write_and_publish_pipeline(self, mock_llm_client):
+        """Test full 'write_and_publish' pipeline."""
+        from platforms.base import BasePlatformAdapter, ContentPost, PostResult
+
+        class MockPlatform(BasePlatformAdapter):
+            platform_name = "mock_test"
+            def authenticate(self): return True
+            def post(self, content): return PostResult(success=True, platform="mock_test", post_id="1")
+
+        writer = WriterAgent(mock_llm_client)
+        publisher = PublisherAgent(mock_llm_client)
+        publisher.register_platform("mock_test", MockPlatform())
+
+        orchestrator = Orchestrator()
+        orchestrator.register_agent(writer)
+        orchestrator.register_agent(publisher)
+
+        task = orchestrator.create_task(
+            task_type="write_and_publish",
+            params={
+                "topic": "测试话题",
+                "style": "technical",
+                "platforms": ["mock_test"],
+                "dry_run": True,
+                "enable_rag": False,
+            },
+        )
+        result = orchestrator.execute_pipeline(task)
+
+        assert result.success
+        assert "writer" in result.results
+        assert "publisher" in result.results
+        assert result.results["writer"].success
+        assert result.results["publisher"].success
+
+    def test_history_tracking(self, mock_llm_client):
+        """Verify pipeline history is tracked."""
+        writer = WriterAgent(mock_llm_client)
+        publisher = PublisherAgent(mock_llm_client)
+
+        orchestrator = Orchestrator()
+        orchestrator.register_agent(writer)
+        orchestrator.register_agent(publisher)
+
+        assert len(orchestrator.get_history()) == 0
+
+        task = orchestrator.create_task(
+            task_type="write",
+            params={"topic": "Test", "enable_rag": False},
+        )
+        orchestrator.execute_pipeline(task)
+
+        assert len(orchestrator.get_history()) == 1
+        assert orchestrator.get_history()[0].success
+
+    def test_missing_agent(self, mock_llm_client):
+        """Test behavior when required agent is missing."""
+        orchestrator = Orchestrator()
+        # Don't register any agents
+
+        task = orchestrator.create_task(task_type="write", params={})
+        result = orchestrator.execute_pipeline(task)
+
+        assert not result.success
+        assert "not registered" in (result.error_message or "")

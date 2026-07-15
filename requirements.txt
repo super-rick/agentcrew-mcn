@@ -1,0 +1,30 @@
+# LLM
+openai>=1.0.0          # OpenAI-compatible API (DeepSeek)
+httpx>=0.27.0          # HTTP client
+
+# CLI
+click>=8.1.0           # CLI framework
+pyyaml>=6.0            # YAML config parsing
+rich>=13.0.0           # Terminal formatting
+
+# RAG
+chromadb>=0.5.0        # Vector database
+
+# Scheduling
+schedule>=1.2.0        # Cron-like scheduler
+
+# For DuckDuckGo web search (Tools)
+duckduckgo-search>=6.0.0
+
+# Dev
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+black>=24.0.0
+ruff>=0.1.0
+
+# Platform-specific (install when needed)
+# tweepy>=4.14.0       # X/Twitter
+# playwright>=1.40.0   # 知乎 (browser automation)
+# streamlit>=1.28.0    # Dashboard
+# pandas>=2.0.0
+# plotly>=5.0.0
