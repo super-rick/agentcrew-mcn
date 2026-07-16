@@ -50,6 +50,13 @@ def post(ctx, text, file_path, platforms, title, dry_run):
             console.print(f"[red]❌ 读取文件失败: {e}[/red]")
             return
 
+    # Auto-extract title from first Markdown heading if not provided
+    if not title and text:
+        import re
+        match = re.match(r"^#\s+(.+)", text.strip())
+        if match:
+            title = match.group(1).strip()
+
     # Ensure we have text
     if not text or not text.strip():
         console.print("[red]❌ 内容不能为空[/red]")
