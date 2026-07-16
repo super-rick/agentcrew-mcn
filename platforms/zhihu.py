@@ -219,40 +219,17 @@ class ZhihuAdapter(BasePlatformAdapter):
                 await title_input.fill(content.title)
                 await self._random_delay()
 
-                # Try importing Markdown file via Zhihu's built-in importer
-                # Write content to a temp .md file for upload
-                import tempfile
-                _tmp = tempfile.NamedTemporaryFile(
-                    mode="w", suffix=".md", encoding="utf-8", delete=False
-                )
-                _tmp.write(content.text)
-                _tmp.close()
+                # Type Markdown directly into the editor — Zhihu renders it natively
+                # keyboard.insert_text() dispatches input events that preserve formatting,
+                # unlike clipboard paste which Draft.js may mangle
+                content_area = page.locator(".public-DraftEditor-content")
+                await content_area.click()
+                await self._random_delay(500, 1000)
 
-                try:
-                    # Click "导入文章" in the toolbar if available
-                    import_btn = page.locator("text=导入文章")
-                    if await import_btn.count() > 0:
-                        await import_btn.first.click()
-                        await self._random_delay(500, 1000)
-
-                        # Look for file input (hidden) and upload
-                        file_input = page.locator('input[type="file"][accept*=".md"], input[type="file"][accept*="markdown"]')
-                        if await file_input.count() == 0:
-                            # Fallback: generic file input in the import dialog
-                            file_input = page.locator('input[type="file"]').first
-
-                        await file_input.set_input_files(_tmp.name)
-                        await self._random_delay(3000, 5000)
-                    else:
-                        # Fallback: type Markdown directly into the editor
-                        content_area = page.locator(".public-DraftEditor-content")
-                        await content_area.click()
-                        await page.keyboard.type(content.title or "", delay=30)
-                        await page.keyboard.press("Enter")
-                        await page.keyboard.type(content.text, delay=10)
-                        await self._random_delay(2000, 4000)
-                finally:
-                    Path(_tmp.name).unlink(missing_ok=True)
+                # Select all existing content (clear placeholder) and insert
+                await content_area.press("Meta+a")
+                await page.keyboard.insert_text(content.text)
+                await self._random_delay(2000, 4000)
 
                 if content.draft:
                     # Save as draft — content auto-saves, just don't click publish
