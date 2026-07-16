@@ -122,7 +122,7 @@ def setup_orchestrator(config: dict) -> tuple:
     from agents.writer import WriterAgent
     from agents.publisher import PublisherAgent
     from agents.analyst import AnalystAgent
-    from rag.embedder import DeepSeekEmbedder
+    from rag.embedder import create_embedder
     from rag.knowledge_base import KnowledgeBase
     from orchestrator.manager import Orchestrator
 
@@ -145,17 +145,21 @@ def setup_orchestrator(config: dict) -> tuple:
     kb = None
     retriever = None
     rag_cfg = config.get("rag", {})
-    if rag_cfg.get("enabled", True) and api_key:
-        embedder = DeepSeekEmbedder(
-            api_key=api_key,
-            base_url=llm_cfg.get("base_url", "https://api.deepseek.com/v1"),
-        )
-        kb = KnowledgeBase(
-            persist_dir=rag_cfg.get("chroma_persist_dir", "data/chroma"),
-            embedder=embedder,
-            collection_name=rag_cfg.get("collection_name", "agentcrew_mcn_kb"),
-        )
-        retriever = Retriever(kb)
+    if rag_cfg.get("enabled", True):
+        embedding_cfg = rag_cfg.get("embedding", {})
+        try:
+            embedder = create_embedder(embedding_cfg)
+        except ValueError as e:
+            console.print(f"[yellow]⚠ RAG 未启用: {e}[/yellow]")
+            embedder = None
+
+        if embedder:
+            kb = KnowledgeBase(
+                persist_dir=rag_cfg.get("chroma_persist_dir", "data/chroma"),
+                embedder=embedder,
+                collection_name=rag_cfg.get("collection_name", "agentcrew_mcn_kb"),
+            )
+            retriever = Retriever(kb)
 
     # --- Agents ---
     writer = WriterAgent(

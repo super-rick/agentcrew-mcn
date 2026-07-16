@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from rag.embedder import DeepSeekEmbedder
+from rag.embedder import OpenAIEmbedder, create_embedder
 from rag.knowledge_base import KnowledgeBase, Document
 from rag.retriever import Retriever
 
@@ -11,11 +11,37 @@ from rag.retriever import Retriever
 class TestEmbedder:
     """Test suite for embedder."""
 
-    def test_deepseek_embedder_needs_api_key(self):
-        """DeepSeekEmbedder requires an API key."""
-        embedder = DeepSeekEmbedder(api_key="test-key")
+    def test_openai_embedder_initialization(self):
+        """OpenAIEmbedder accepts api_key, base_url, model."""
+        embedder = OpenAIEmbedder(
+            api_key="test-key",
+            base_url="https://api.openai.com/v1",
+            model="text-embedding-3-small",
+        )
         assert embedder is not None
-        assert embedder._model == "deepseek-embedding"
+        assert embedder._model == "text-embedding-3-small"
+
+    def test_create_embedder_factory_defaults(self):
+        """create_embedder uses defaults for minimal config."""
+        embedder = create_embedder({"api_key": "test-key"})
+        assert isinstance(embedder, OpenAIEmbedder)
+        assert embedder._model == "text-embedding-3-small"
+
+    def test_create_embedder_custom_model(self):
+        """create_embedder passes through custom model and base_url."""
+        embedder = create_embedder({
+            "provider": "openai",
+            "api_key": "test-key",
+            "model": "custom-model",
+            "base_url": "https://custom.api.com/v1",
+        })
+        assert embedder._model == "custom-model"
+
+    def test_create_embedder_unsupported_provider(self):
+        """create_embedder raises for unknown provider."""
+        import pytest
+        with pytest.raises(ValueError, match="Unsupported embedding provider"):
+            create_embedder({"provider": "unknown", "api_key": "k"})
 
 
 class TestKnowledgeBase:
