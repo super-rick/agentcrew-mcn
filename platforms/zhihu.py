@@ -239,19 +239,27 @@ class ZhihuAdapter(BasePlatformAdapter):
                 await page.evaluate(_js)
                 await self._random_delay(2000, 4000)
 
-                # Click publish (use exact match to avoid "发布设置" button)
-                publish_btn = page.get_by_role("button", name="发布", exact=True)
-                await publish_btn.click()
-                await self._random_delay(3000, 5000)
+                if content.draft:
+                    # Save as draft — content auto-saves, just don't click publish
+                    return PostResult(
+                        success=True,
+                        platform=self.platform_name,
+                        post_url="[DRAFT] 已保存到知乎草稿箱",
+                        posted_at=datetime.now(),
+                    )
+                else:
+                    # Click publish (use exact match to avoid "发布设置" button)
+                    publish_btn = page.get_by_role("button", name="发布", exact=True)
+                    await publish_btn.click()
+                    await self._random_delay(3000, 5000)
 
-                # Get the article URL from the page
-                current_url = page.url
-                return PostResult(
-                    success=True,
-                    platform=self.platform_name,
-                    post_url=current_url,
-                    posted_at=datetime.now(),
-                )
+                    current_url = page.url
+                    return PostResult(
+                        success=True,
+                        platform=self.platform_name,
+                        post_url=current_url,
+                        posted_at=datetime.now(),
+                    )
             else:
                 # Post as answer (需要指定问题 ID)
                 # 简化版: 创建想法（类似沸点）
