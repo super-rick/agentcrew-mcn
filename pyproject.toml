@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=68.0"]
-build-backend = "setuptools.backends._legacy:_Backend"
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-crew"
@@ -8,8 +8,49 @@ version = "0.1.0"
 description = "AI MCN 自动推广工具 — 你的AI营销团队，24小时在线工作，不领工资。"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
-keywords = ["ai", "mcn", "marketing", "agent", "automation"]
+license = "MIT"
+authors = [
+    {name = "super-rick"},
+]
+keywords = ["ai", "mcn", "marketing", "agent", "automation", "content-marketing", "multi-agent"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "openai>=1.0.0",
+    "httpx>=0.27.0",
+    "click>=8.1.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+    "chromadb>=0.5.0",
+    "schedule>=1.2.0",
+    "duckduckgo-search>=6.0.0",
+    "streamlit>=1.28.0",
+    "pandas>=2.0.0",
+    "plotly>=5.0.0",
+]
+
+[project.scripts]
+agent-crew = "cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/super-rick/agent-crew"
+"Bug Reports" = "https://github.com/super-rick/agent-crew/issues"
+"Source" = "https://github.com/super-rick/agent-crew"
+
+[tool.setuptools.packages.find]
+include = ["agents*", "cli*", "llm*", "orchestrator*", "platforms*", "rag*", "dashboard*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml", "*.json", "*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
