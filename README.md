@@ -36,7 +36,7 @@ AgentCrew 是一个开源的多 Agent 内容营销自动化工具。它由一组
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-username/agent-crew.git
+git clone https://github.com/super-rick/agent-crew.git
 cd agent-crew
 
 # 2. 安装依赖
