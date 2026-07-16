@@ -1,13 +1,13 @@
-# Contributing to AgentCrew
+# Contributing to AgentCrew MCN
 
-感谢你对 AgentCrew 的关注！本文档将帮助你快速上手贡献代码。
+感谢你对 AgentCrew MCN 的关注！本文档将帮助你快速上手贡献代码。
 
 ## 开发环境设置
 
 ```bash
 # 1. Fork + Clone
-git clone https://github.com/YOUR_USERNAME/agent-crew.git
-cd agent-crew
+git clone https://github.com/YOUR_USERNAME/agentcrew-mcn.git
+cd agentcrew-mcn
 
 # 2. 创建虚拟环境（需要 Python 3.10+）
 python3 -m venv .venv
@@ -111,7 +111,7 @@ my_tool = Tool(
 
 ### 4. 修复 Bug 或改进文档
 
-查看 [Issues](https://github.com/super-rick/agent-crew/issues) 中的 `good first issue` 标签。
+查看 [Issues](https://github.com/super-rick/agentcrew-mcn/issues) 中的 `good first issue` 标签。
 
 ## 提交 PR 流程
 
@@ -146,8 +146,8 @@ pytest tests/test_integration/ -v
 
 ## 问题反馈
 
-- 🐛 Bug → [GitHub Issues](https://github.com/super-rick/agent-crew/issues)
-- 💡 功能建议 → [GitHub Discussions](https://github.com/super-rick/agent-crew/discussions)
+- 🐛 Bug → [GitHub Issues](https://github.com/super-rick/agentcrew-mcn/issues)
+- 💡 功能建议 → [GitHub Discussions](https://github.com/super-rick/agentcrew-mcn/discussions)
 - ❓ 使用问题 → 同上
 
 ---

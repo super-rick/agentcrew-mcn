@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**AgentCrew** — AI MCN 自动推广工具。多 Agent 架构的开源内容营销自动化工具，自动完成从内容生成到跨平台分发的全流程。
+**AgentCrew MCN** — AI MCN 自动推广工具。多 Agent 架构的开源内容营销自动化工具，自动完成从内容生成到跨平台分发的全流程。
 
 核心叙事：项目自己推广自己（Dogfooding / Meta 闭环）。
 
@@ -168,7 +168,7 @@ data/         运行时数据（chroma 向量库 / 日志）
 > **三步走，按顺序执行：**
 
 **Step 1: 🍽️ Dogfooding — 跑通真实全流程**
-- 用 AgentCrew 写一篇推广自己的技术文章
+- 用 AgentCrew MCN 写一篇推广自己的技术文章
 - `python3 -m cli.main write generate --topic "AI 自动内容营销工具 AgentCrew 实战" --platform juejin --rag`
 - 先在掘金 dry-run，确认无误后正式发布
 - 目的：验证 mock 测试覆盖不到的真实环境问题

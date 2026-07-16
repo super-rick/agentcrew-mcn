@@ -1,1 +1,1 @@
-"""Dashboard package for AgentCrew — Streamlit web UI."""
+"""Dashboard package for AgentCrew MCN — Streamlit web UI."""

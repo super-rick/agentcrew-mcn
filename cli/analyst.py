@@ -2,10 +2,10 @@
 CLI — analyst commands.
 
 Usage:
-    agent-crew analyst analyze  --days 7 --platform juejin
-    agent-crew analyst report    --days 7
-    agent-crew analyst recommend --days 14
-    agent-crew analyst history   --limit 20
+    agentcrew-mcnanalyst analyze  --days 7 --platform juejin
+    agentcrew-mcnanalyst report    --days 7
+    agentcrew-mcnanalyst recommend --days 14
+    agentcrew-mcnanalyst history   --limit 20
 """
 
 import click

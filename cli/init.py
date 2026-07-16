@@ -2,9 +2,9 @@
 CLI — init command. Bootstraps AgentCrew configuration.
 
 Usage:
-    agent-crew init              # Create config in current directory
-    agent-crew init --dir /opt   # Create config in specific directory
-    agent-crew init --force      # Overwrite existing files without prompting
+    agentcrew-mcninit              # Create config in current directory
+    agentcrew-mcninit --dir /opt   # Create config in specific directory
+    agentcrew-mcninit --force      # Overwrite existing files without prompting
 """
 
 from pathlib import Path
@@ -84,10 +84,10 @@ def init_command(target_dir, force):
             "   [dim]JUEJIN_COOKIE=...[/dim]",
             "",
             "[bold]2.[/bold] Start generating content:",
-            "   [dim]agent-crew write generate --topic \"Your Topic\" --style technical[/dim]",
+            "   [dim]agentcrew-mcnwrite generate --topic \"Your Topic\" --style technical[/dim]",
             "",
             "[bold]3.[/bold] Explore all commands:",
-            "   [dim]agent-crew --help[/dim]",
+            "   [dim]agentcrew-mcn--help[/dim]",
         ]),
         title="[bold green]Next Steps[/bold green]",
         border_style="green",

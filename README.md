@@ -1,4 +1,4 @@
-# AgentCrew 🤖
+# AgentCrew MCN 🤖
 
 <div align="center">
 
@@ -14,7 +14,7 @@
 
 ## 什么是 AgentCrew？
 
-AgentCrew 是一个开源的多 Agent 内容营销自动化工具。它由一组 AI"员工"组成，自动完成从内容生成到跨平台分发的全流程。
+AgentCrew MCN 是一个开源的多 Agent 内容营销自动化工具。它由一组 AI"员工"组成，自动完成从内容生成到跨平台分发的全流程。
 
 - **Writer Agent** — 文案员工：生成技术文章、帖子、Thread
 - **Publisher Agent** — 运营员工：发布到掘金、知乎、X/Twitter
@@ -40,24 +40,24 @@ AgentCrew 是一个开源的多 Agent 内容营销自动化工具。它由一组
 pip install agentcrew-mcn
 
 # 2. 初始化配置
-agent-crew init
+agentcrew-mcninit
 
 # 3. 编辑 .env，填入你的 API Key
 #    DEEPSEEK_API_KEY=sk-...
 
 # 4. 开始使用
-agent-crew write generate --topic "Python异步编程" --style technical
-agent-crew publish post --file article.md --platform juejin --dry-run
+agentcrew-mcnwrite generate --topic "Python异步编程" --style technical
+agentcrew-mcnpublish post --file article.md --platform juejin --dry-run
 ```
 
-> 💡 也可使用 `agentcrew-mcn` 命令，与 `agent-crew` 完全等价。
+> 💡 也可使用 `agent-crew` 命令，与 `agentcrew-mcn` 完全等价。
 
 ### 方式二：源码安装
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/super-rick/agent-crew.git
-cd agent-crew
+git clone https://github.com/super-rick/agentcrew-mcn.git
+cd agentcrew-mcn
 
 # 2. 安装依赖
 pip install -r requirements.txt
@@ -70,7 +70,7 @@ python -m cli.main init
 
 ### 配置
 
-`agent-crew init` 会自动创建配置文件模板。主要配置项：
+`agentcrew-mcninit` 会自动创建配置文件模板。主要配置项：
 
 ```yaml
 # config.yaml 核心配置
@@ -87,20 +87,20 @@ platforms:
 
 ```bash
 # 生成一篇技术文章
-agent-crew write generate --topic "Python异步编程" --style technical
+agentcrew-mcnwrite generate --topic "Python异步编程" --style technical
 
 # 预览模式（不调用 LLM，查看参数）
-agent-crew write generate --topic "Python异步编程" --dry-run
+agentcrew-mcnwrite generate --topic "Python异步编程" --dry-run
 
 # 发布到掘金
-agent-crew publish post --file article.md --platform juejin
+agentcrew-mcnpublish post --file article.md --platform juejin
 
 # 启动定时发布（每6小时）
-agent-crew schedule start --topic-file topics.txt --platform juejin --interval 6
+agentcrew-mcnschedule start --topic-file topics.txt --platform juejin --interval 6
 
 # 管理 RAG 知识库
-agent-crew rag ingest --file article.md --source "my_blog"
-agent-crew rag search --query "AI Agent 架构"
+agentcrew-mcnrag ingest --file article.md --source "my_blog"
+agentcrew-mcnrag search --query "AI Agent 架构"
 ```
 
 ## 架构概览

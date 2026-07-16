@@ -1,6 +1,6 @@
 AI Agent 架构设计：从单体到多智能体协作
 为什么你的内容营销需要 AI Agent 而不是 ChatGPT
-对比 CrewAI vs LangChain vs AgentCrew：多 Agent 框架选型指南
+对比 CrewAI vs LangChain vs AgentCrew MCN：多 Agent 框架选型指南
 开源项目从 0 到 500 Star 的推广方法论
 2026 年 AI 内容营销的 5 个趋势
 技术博主的 AI 副驾驶：如何用 Agent 自动化你的内容管线

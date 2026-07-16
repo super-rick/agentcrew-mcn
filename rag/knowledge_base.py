@@ -42,7 +42,7 @@ class KnowledgeBase:
         self,
         persist_dir: str,
         embedder: BaseEmbedder,
-        collection_name: str = "agentcrew_kb",
+        collection_name: str = "agentcrew_mcn_kb",
     ):
         self.persist_dir = persist_dir
         self.embedder = embedder

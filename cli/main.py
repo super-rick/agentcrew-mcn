@@ -1,12 +1,12 @@
 """
-AgentCrew CLI — main entry point.
+AgentCrew MCN CLI — main entry point.
 
 Usage:
-    agent-crew write generate --topic "xxx" --style technical
-    agent-crew publish post --content "xxx" --platform juejin
-    agent-crew schedule start --topic-file topics.txt --platform juejin --interval 6
-    agent-crew rag ingest --file article.md --source "my_blog"
-    agent-crew init
+    agentcrew-mcnwrite generate --topic "xxx" --style technical
+    agentcrew-mcnpublish post --content "xxx" --platform juejin
+    agentcrew-mcnschedule start --topic-file topics.txt --platform juejin --interval 6
+    agentcrew-mcnrag ingest --file article.md --source "my_blog"
+    agentcrew-mcninit
 """
 
 import os
@@ -19,7 +19,7 @@ from rich.panel import Panel
 
 console = Console()
 
-# --- .env loading (from CWD, where `agent-crew init` creates it) ---
+# --- .env loading (from CWD, where `agentcrew-mcninit` creates it) ---
 _env_path = Path.cwd() / ".env"
 if _env_path.exists():
     with open(_env_path, "r") as _f:
@@ -46,8 +46,8 @@ from cli.init import init_command
 # --- Config search paths (in priority order, for default config) ---
 CONFIG_SEARCH_PATHS = [
     Path.cwd() / "config.yaml",
-    Path.home() / ".config" / "agentcrew" / "config.yaml",
-    Path.home() / ".agentcrew" / "config.yaml",
+    Path.home() / ".config" / "agentcrew-mcn" / "config.yaml",
+    Path.home() / ".agentcrew-mcn" / "config.yaml",
 ]
 
 
@@ -56,8 +56,8 @@ def load_config(config_path: str) -> "tuple[dict, Path | None]":
 
     Search order (when config_path == default "config.yaml"):
         1. ./config.yaml
-        2. ~/.config/agentcrew/config.yaml   (XDG)
-        3. ~/.agentcrew/config.yaml          (legacy dotfile)
+        2. ~/.config/agentcrew-mcn/config.yaml   (XDG)
+        3. ~/.agentcrew-mcn/config.yaml          (legacy dotfile)
 
     When --config is explicitly given, only that path is tried.
     Returns ({}, None) if no config file is found anywhere.
@@ -70,7 +70,7 @@ def load_config(config_path: str) -> "tuple[dict, Path | None]":
     if config_path != "config.yaml":
         if not path.exists():
             console.print(f"[red]Error:[/red] Config file not found: {config_path}")
-            console.print("[yellow]Hint:[/yellow] Run [bold]agent-crew init[/bold] to create one.")
+            console.print("[yellow]Hint:[/yellow] Run [bold]agentcrew-mcninit[/bold] to create one.")
             return {}, None
         content = path.read_text(encoding="utf-8")
         content = _substitute_env_vars(content)
@@ -93,10 +93,10 @@ def load_config(config_path: str) -> "tuple[dict, Path | None]":
             f"  [dim]• {CONFIG_SEARCH_PATHS[2]}[/dim]",
             "",
             "[bold]Run this to get started:[/bold]",
-            "  [cyan]agent-crew init[/cyan]",
+            "  [cyan]agentcrew-mcninit[/cyan]",
             "",
             "Or specify a config file explicitly:",
-            "  [cyan]agent-crew --config /path/to/config.yaml write generate ...[/cyan]",
+            "  [cyan]agentcrew-mcn--config /path/to/config.yaml write generate ...[/cyan]",
         ]),
         title="[yellow]Configuration Required[/yellow]",
         border_style="yellow",
@@ -153,7 +153,7 @@ def setup_orchestrator(config: dict) -> tuple:
         kb = KnowledgeBase(
             persist_dir=rag_cfg.get("chroma_persist_dir", "data/chroma"),
             embedder=embedder,
-            collection_name=rag_cfg.get("collection_name", "agentcrew_kb"),
+            collection_name=rag_cfg.get("collection_name", "agentcrew_mcn_kb"),
         )
         retriever = Retriever(kb)
 
@@ -206,23 +206,23 @@ def setup_orchestrator(config: dict) -> tuple:
 @click.option("--config", "-c", default="config.yaml", help="Configuration file path")
 @click.pass_context
 def main(ctx, config):
-    """AgentCrew — AI MCN 自动推广工具。
+    """AgentCrew MCN — AI MCN 自动推广工具。
 
     \b
     你的 AI 营销团队，24 小时在线工作，不领工资。
 
     \b
     使用方式:
-        agent-crew write generate --topic "主题"
-        agent-crew publish post --content "内容" --platform juejin
-        agent-crew schedule start --topic-file topics.txt
-        agent-crew rag ingest --file document.md
+        agentcrew-mcnwrite generate --topic "主题"
+        agentcrew-mcnpublish post --content "内容" --platform juejin
+        agentcrew-mcnschedule start --topic-file topics.txt
+        agentcrew-mcnrag ingest --file document.md
 
     \b
     首次使用:
-        agent-crew init          # 创建配置文件模板
+        agentcrew-mcninit          # 创建配置文件模板
         # 编辑 .env，填入 API Key
-        agent-crew write generate --topic "Hello World"
+        agentcrew-mcnwrite generate --topic "Hello World"
     """
     ctx.ensure_object(dict)
     ctx.obj["config_path"] = config

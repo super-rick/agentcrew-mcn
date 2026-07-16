@@ -39,13 +39,13 @@ dependencies = [
 ]
 
 [project.scripts]
-agent-crew = "cli.main:main"
 agentcrew-mcn = "cli.main:main"
+agent-crew = "cli.main:main"
 
 [project.urls]
-Homepage = "https://github.com/super-rick/agent-crew"
-"Bug Reports" = "https://github.com/super-rick/agent-crew/issues"
-"Source" = "https://github.com/super-rick/agent-crew"
+Homepage = "https://github.com/super-rick/agentcrew-mcn"
+"Bug Reports" = "https://github.com/super-rick/agentcrew-mcn/issues"
+"Source" = "https://github.com/super-rick/agentcrew-mcn"
 
 [tool.setuptools.packages.find]
 include = ["agents*", "cli*", "llm*", "orchestrator*", "platforms*", "rag*", "dashboard*"]

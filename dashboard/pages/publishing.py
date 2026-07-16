@@ -30,7 +30,7 @@ def main() -> None:
 
     records = load_post_history()
     if not records:
-        st.info("暂无发布记录。去 CLI 试试 `agent-crew publish post --help`！")
+        st.info("暂无发布记录。去 CLI 试试 `agentcrew-mcnpublish post --help`！")
         return
 
     # ── Filters ──

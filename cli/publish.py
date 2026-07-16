@@ -2,9 +2,9 @@
 CLI — publish commands.
 
 Usage:
-    agent-crew publish post --text "xxx" --platform juejin
-    agent-crew publish post --file article.md --platform juejin --platform zhihu
-    agent-crew publish status --platform juejin
+    agentcrew-mcnpublish post --text "xxx" --platform juejin
+    agentcrew-mcnpublish post --file article.md --platform juejin --platform zhihu
+    agentcrew-mcnpublish status --platform juejin
 """
 
 from datetime import datetime

@@ -154,7 +154,7 @@ def get_recent_logs(lines: int = 50) -> str:
 
     Returns an empty string if the log file is missing or empty.
     """
-    log_path = PROJECT_ROOT / "data" / "logs" / "agentcrew.log"
+    log_path = PROJECT_ROOT / "data" / "logs" / "agentcrew-mcn.log"
     if not log_path.exists():
         return ""
     try:

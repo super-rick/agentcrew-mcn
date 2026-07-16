@@ -70,7 +70,7 @@ def main() -> None:
         for col_info in rag_stats.get("collections", []):
             st.markdown(f"- **{col_info['name']}**: {col_info['count']} 条文档")
     else:
-        st.info("RAG 知识库未启用或无数据。使用 `agent-crew rag ingest --file doc.md` 添加文档。")
+        st.info("RAG 知识库未启用或无数据。使用 `agentcrew-mcnrag ingest --file doc.md` 添加文档。")
 
     # ── Config Overview ──
     st.subheader("📋 配置概览")

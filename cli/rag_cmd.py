@@ -2,10 +2,10 @@
 CLI — RAG knowledge base commands.
 
 Usage:
-    agent-crew rag ingest --file article.md --source "my_blog"
-    agent-crew rag search --query "相关主题"
-    agent-crew rag ingest-dir --dir docs/ --source "docs"
-    agent-crew rag stats
+    agentcrew-mcnrag ingest --file article.md --source "my_blog"
+    agentcrew-mcnrag search --query "相关主题"
+    agentcrew-mcnrag ingest-dir --dir docs/ --source "docs"
+    agentcrew-mcnrag stats
 """
 
 from pathlib import Path

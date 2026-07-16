@@ -1,4 +1,4 @@
-"""AgentCrew Dashboard — Streamlit web UI.
+"""AgentCrew MCN Dashboard — Streamlit web UI.
 
 Usage:
     streamlit run dashboard/app.py
@@ -29,7 +29,7 @@ from dashboard.data_loader import (
 )
 
 st.set_page_config(
-    page_title="AgentCrew Dashboard",
+    page_title="AgentCrew MCN Dashboard",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -48,7 +48,7 @@ PAGES = {
 
 def _render_overview() -> None:
     """Render the Overview (home) page."""
-    st.title("🤖 AgentCrew Dashboard")
+    st.title("🤖 AgentCrew MCN Dashboard")
     st.caption("AI MCN 自动推广工具 — 你的 AI 营销团队，24 小时在线")
 
     records = load_post_history()
@@ -115,9 +115,9 @@ def _render_overview() -> None:
             "还没有发布记录。试试从 CLI 开始：\n\n"
             "```bash\n"
             "# 生成一篇内容\n"
-            "agent-crew write generate --topic \"Python AI Agent 入门\" --style technical\n\n"
+            "agentcrew-mcnwrite generate --topic \"Python AI Agent 入门\" --style technical\n\n"
             "# 发布到掘金（预览模式）\n"
-            "agent-crew publish post --text \"内容...\" --platform juejin --dry-run\n"
+            "agentcrew-mcnpublish post --text \"内容...\" --platform juejin --dry-run\n"
             "```"
         )
 
@@ -143,7 +143,7 @@ with st.sidebar:
         st.progress(success / total, text=f"成功率 {success/total*100:.0f}%")
 
     st.divider()
-    st.caption(f"AgentCrew v0.2.0 | [GitHub](https://github.com)")
+    st.caption(f"AgentCrew MCN v0.2.0 | [GitHub](https://github.com)")
 
 # ── Page Router ─────────────────────────────────────────────
 
