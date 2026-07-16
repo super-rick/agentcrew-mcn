@@ -26,8 +26,16 @@ class Retriever:
         """Retrieve context specifically for the Writer Agent.
 
         Combines semantic similarity with optional style/source filtering.
+        Returns empty list if embedding service is unavailable.
         """
-        return self.kb.search(query=topic, n_results=limit)
+        try:
+            return self.kb.search(query=topic, n_results=limit)
+        except Exception as e:
+            # Embedding may fail if the provider doesn't support it
+            # (e.g. DeepSeek has no embedding model)
+            import sys
+            print(f"  [WARN] RAG retrieval skipped (embedding unavailable): {e}", file=sys.stderr)
+            return []
 
     def retrieve_similar(self, text: str, limit: int = 5) -> list[SearchResult]:
         """Simple similarity search."""

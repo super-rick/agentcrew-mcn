@@ -23,11 +23,17 @@ class BaseEmbedder(ABC):
 
 
 class DeepSeekEmbedder(BaseEmbedder):
-    """Embedding via DeepSeek API (OpenAI-compatible)."""
+    """Embedding via DeepSeek API (OpenAI-compatible).
+
+    NOTE: DeepSeek does NOT currently offer an embedding model.
+    This embedder uses a fallback/hallucinated model name and WILL fail with 404.
+    For production, switch to OpenAI text-embedding-3-small or local BGE model.
+    """
 
     def __init__(self, api_key: str, base_url: str = "https://api.deepseek.com/v1"):
         self._client = OpenAI(api_key=api_key, base_url=base_url)
-        self._model = "deepseek-embedding"  # DeepSeek embedding model name
+        # WARNING: DeepSeek has no embedding API. Use alternative provider.
+        self._model = "deepseek-embedding"
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         response = self._client.embeddings.create(model=self._model, input=texts)

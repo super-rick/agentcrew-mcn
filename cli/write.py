@@ -57,7 +57,6 @@ def generate(ctx, topic, style, platform, skill, rag, output, dry_run):
             console.print(f"  [dim]输出文件:[/dim] {output}")
         console.print()
 
-        from rich.panel import Panel
         console.print(Panel(
             f"将调用 Writer Agent 生成关于 [bold]'{topic}'[/bold] 的内容\n"
             f"风格: {style} | 平台: {platform} | RAG: {'启用' if rag else '禁用'}" +
