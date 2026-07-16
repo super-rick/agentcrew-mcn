@@ -234,31 +234,16 @@ class ZhihuAdapter(BasePlatformAdapter):
                 await title_input.click()
                 await self._random_delay(500, 1000)
 
-                # Debug: check publish button state before clicking
+                # Click publish via JS dispatchEvent (bypasses React synthetic events)
                 publish_btn = page.get_by_role("button", name="发布", exact=True)
-                is_disabled = await publish_btn.is_disabled() if await publish_btn.count() > 0 else True
-                btn_text = await publish_btn.text_content() if await publish_btn.count() > 0 else "NOT FOUND"
-                print(f"[DEBUG] Publish button: text='{btn_text}', disabled={is_disabled}")
-
-                # Take screenshot for debugging
-                await page.screenshot(path="data/zhihu_debug.png")
-
-                await publish_btn.click(force=True)
+                await publish_btn.evaluate("el => el.click()")
                 await self._random_delay(1000, 2000)
-
-                # Check for confirmation dialog (Zhihu 2-step publish)
-                for confirm_name in ["确认发布", "确定", "确认并发布"]:
-                    confirm_btn = page.get_by_role("button", name=confirm_name)
-                    if await confirm_btn.count() > 0:
-                        await confirm_btn.click(force=True)
-                        await self._random_delay(1000, 2000)
-                        break
 
                 # Wait for navigation to the published article
                 try:
-                    await page.wait_for_url(lambda url: "/write" not in url and "/edit" not in url, timeout=15000)
+                    await page.wait_for_url(lambda url: "/write" not in url, timeout=15000)
                 except Exception:
-                    pass  # May already be on the right page
+                    pass
                 await self._random_delay(1000, 2000)
 
                 current_url = page.url
