@@ -20,12 +20,9 @@ env/
 .idea/
 .cursor/
 
-# Data (runtime)
-data/chroma/
-data/logs/*.log
+# Data (runtime) — all runtime data is local, not committed
+data/*
 !data/.gitkeep
-!data/chroma/.gitkeep
-!data/logs/.gitkeep
 
 # OS
 .DS_Store
