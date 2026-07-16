@@ -231,10 +231,15 @@ class ZhihuAdapter(BasePlatformAdapter):
                 await page.keyboard.press("Backspace")
                 await self._random_delay(2000, 3000)
 
-                # Click publish
+                # Click publish and wait for redirect away from editor
                 publish_btn = page.get_by_role("button", name="发布", exact=True)
                 await publish_btn.click()
-                await self._random_delay(3000, 5000)
+                # Wait for navigation to the published article
+                try:
+                    await page.wait_for_url(lambda url: "/write" not in url and "/edit" not in url, timeout=15000)
+                except Exception:
+                    pass  # May already be on the right page
+                await self._random_delay(1000, 2000)
 
                 current_url = page.url
                 return PostResult(
