@@ -219,21 +219,18 @@ class ZhihuAdapter(BasePlatformAdapter):
                 await title_input.fill(content.title)
                 await self._random_delay()
 
-                # Fill content (知乎使用 Draft.js 富文本编辑器)
-                # Convert Markdown to HTML with inline-styled code blocks
-                html_content = self._markdown_to_html(content.text)
-
+                # Fill content — paste raw Markdown, let Zhihu's editor render it
+                # Zhihu's editor supports Markdown natively (code blocks, headings, etc.)
                 content_area = page.locator(".public-DraftEditor-content")
                 await content_area.click()
                 await self._random_delay(500, 1000)
 
-                # Paste HTML into the Draft.js editor via clipboard
+                # Paste raw Markdown as plain text (no HTML conversion)
+                # Draft.js will process it; Zhihu's editor auto-renders Markdown
                 import json as _json
-                _html = _json.dumps(html_content)
                 _text = _json.dumps(content.text)
                 _js = (
                     "const dt = new DataTransfer();"
-                    f"dt.setData('text/html', {_html});"
                     f"dt.setData('text/plain', {_text});"
                     "const ev = new ClipboardEvent('paste', {clipboardData: dt, bubbles: true, cancelable: true});"
                     "document.querySelector('.public-DraftEditor-content').dispatchEvent(ev);"
