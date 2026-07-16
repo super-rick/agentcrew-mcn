@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-crew"
+name = "agentcrew-mcn"
 version = "0.1.0"
 description = "AI MCN 自动推广工具 — 你的AI营销团队，24小时在线工作，不领工资。"
 readme = "README.md"
