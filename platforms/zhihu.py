@@ -112,6 +112,57 @@ class ZhihuAdapter(BasePlatformAdapter):
 
         self._page = await self._context.new_page()
 
+    @staticmethod
+    def _markdown_to_html(text: str) -> str:
+        """Convert Markdown to HTML suitable for Zhihu's Draft.js editor.
+
+        Code blocks are rendered with inline styling so they display correctly
+        without requiring external CSS (which Zhihu strips).
+        """
+        import re
+        import markdown as md_lib
+
+        # First, protect fenced code blocks from markdown processing
+        # by converting them to HTML <pre> blocks with inline styling
+        CODE_STYLE = (
+            "background:#f6f8fa;border-radius:6px;padding:16px;"
+            "overflow-x:auto;font-family:'SF Mono',Monaco,Menlo,monospace;"
+            "font-size:14px;line-height:1.6;color:#24292e;"
+            "white-space:pre-wrap;word-break:break-word;"
+            "margin:16px 0;display:block;border:1px solid #e1e4e8;"
+        )
+
+        def _replace_fenced_code(match):
+            lang = match.group(1) or ""
+            code = match.group(2)
+            # Escape HTML entities in code
+            code = code.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            lang_label = f'<span style="color:#6a737d;font-size:12px;">{lang}</span>\n' if lang else ""
+            return f'<pre style="{CODE_STYLE}">{lang_label}{code}</pre>'
+
+        # Replace ```code``` blocks
+        text = re.sub(r"```(\w*)\n(.*?)```", _replace_fenced_code, text, flags=re.DOTALL)
+
+        # Replace inline `code` spans
+        INLINE_STYLE = (
+            "background:#f0f0f0;padding:2px 6px;border-radius:3px;"
+            "font-family:'SF Mono',Monaco,Menlo,monospace;font-size:0.9em;"
+        )
+        text = re.sub(
+            r"`([^`]+?)`",
+            lambda m: f'<code style="{INLINE_STYLE}">{m.group(1)}</code>',
+            text,
+        )
+
+        # Convert remaining Markdown to HTML
+        html = md_lib.markdown(
+            text,
+            extensions=["fenced_code", "tables"],
+        )
+
+        # Wrap in a container with proper line-height for readability
+        return f'<div style="line-height:1.8;color:#1a1a1a;">{html}</div>'
+
     def _parse_cookies(self, cookie_str: str) -> list[dict]:
         """Parse Cookie header string into Playwright cookie format."""
         cookies = []
@@ -152,19 +203,14 @@ class ZhihuAdapter(BasePlatformAdapter):
                 await self._random_delay()
 
                 # Fill content (知乎使用 Draft.js 富文本编辑器)
-                # Convert Markdown to HTML for proper formatting
-                import markdown as md_lib
-                html_content = md_lib.markdown(
-                    content.text,
-                    extensions=["fenced_code", "codehilite", "tables"],
-                )
+                # Convert Markdown to HTML with inline-styled code blocks
+                html_content = self._markdown_to_html(content.text)
 
                 content_area = page.locator(".public-DraftEditor-content")
                 await content_area.click()
                 await self._random_delay(500, 1000)
 
                 # Paste HTML into the Draft.js editor via clipboard
-                # Draft.js handles HTML paste natively via ClipboardEvent
                 import json as _json
                 _html = _json.dumps(html_content)
                 _text = _json.dumps(content.text)

@@ -30,3 +30,5 @@ plotly>=5.0.0
 # Platform-specific (install when needed)
 # tweepy>=4.14.0       # X/Twitter
 # playwright>=1.40.0   # 知乎 (browser automation)
+markdown>=3.5.0         # Markdown → HTML (知乎适配器)
+pygments>=2.17.0        # 代码高亮（知乎适配器 codehilite）
