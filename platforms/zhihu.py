@@ -132,17 +132,18 @@ class ZhihuAdapter(BasePlatformAdapter):
         CODE_STYLE = (
             "background:#f6f8fa;border-radius:6px;padding:16px;"
             "overflow-x:auto;font-family:'SF Mono',Monaco,Menlo,monospace;"
-            "font-size:14px;line-height:1.6;color:#24292e;"
-            "white-space:pre-wrap;word-break:break-word;"
+            "font-size:14px;line-height:1.8;color:#24292e;"
             "margin:16px 0;display:block;border:1px solid #e1e4e8;"
         )
 
         def _replace_fenced_code(match):
             lang = match.group(1) or ""
-            code = match.group(2)
-            # Escape HTML entities in code
+            code = match.group(2).strip()
+            # Escape HTML entities
             code = code.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            lang_label = f'<span style="color:#6a737d;font-size:12px;">{lang}</span>\n' if lang else ""
+            # Use <br> for newlines — Draft.js strips \n but preserves <br>
+            code = code.replace("\n", "<br>")
+            lang_label = f'<span style="color:#6a737d;font-size:12px;display:block;margin-bottom:8px;">{lang}</span>' if lang else ""
             return f'<pre style="{CODE_STYLE}">{lang_label}{code}</pre>'
 
         # Replace ```code``` blocks
@@ -151,7 +152,8 @@ class ZhihuAdapter(BasePlatformAdapter):
         # Replace inline `code` spans
         INLINE_STYLE = (
             "background:#f0f0f0;padding:2px 6px;border-radius:3px;"
-            "font-family:'SF Mono',Monaco,Menlo,monospace;font-size:0.9em;"
+            "font-family:'SF Mono',Monaco,Menlo,monospace;font-size:13px;"
+            "color:#e83e8c;"
         )
         text = re.sub(
             r"`([^`]+?)`",
