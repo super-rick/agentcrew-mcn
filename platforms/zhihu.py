@@ -134,17 +134,19 @@ class ZhihuAdapter(BasePlatformAdapter):
             "overflow-x:auto;font-family:'SF Mono',Monaco,Menlo,monospace;"
             "font-size:14px;line-height:1.8;color:#24292e;"
             "margin:16px 0;display:block;border:1px solid #e1e4e8;"
+            "white-space:pre;word-wrap:normal;"
         )
 
         def _replace_fenced_code(match):
             lang = match.group(1) or ""
-            code = match.group(2).strip()
-            # Escape HTML entities
+            code = match.group(2)
+            # Escape HTML entities (do this BEFORE whitespace conversion)
             code = code.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            # Use <br> for newlines — Draft.js strips \n but preserves <br>
-            code = code.replace("\n", "<br>")
+            # Convert spaces to &nbsp; to preserve indentation in Draft.js
+            code = code.replace("  ", "&nbsp;&nbsp;")
             lang_label = f'<span style="color:#6a737d;font-size:12px;display:block;margin-bottom:8px;">{lang}</span>' if lang else ""
-            return f'<pre style="{CODE_STYLE}">{lang_label}{code}</pre>'
+            # Use <div> instead of <pre> — Draft.js handles it better for whitespace
+            return f'<div style="{CODE_STYLE}">{lang_label}{code}</div>'
 
         # Replace ```code``` blocks
         text = re.sub(r"```(\w*)\n(.*?)```", _replace_fenced_code, text, flags=re.DOTALL)
