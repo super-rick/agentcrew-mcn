@@ -76,7 +76,7 @@ Skill = Tool 的有序编排（trending_writing, technical_article, thread_writi
 BasePlatformAdapter (platforms/base.py)
 ├── JuejinAdapter (platforms/juejin.py) — Cookie 认证，API 发文章/沸点
 ├── ZhihuAdapter (platforms/zhihu.py) — Playwright 浏览器自动化
-└── TwitterAdapter (platforms/twitter.py) — Tweepy OAuth (Week 2)
+└── DevToAdapter (platforms/devto.py) — Forem API
 ```
 
 每个适配器实现 `authenticate()` + `post(content: ContentPost) → PostResult`。
@@ -88,7 +88,7 @@ CLI → Orchestrator.execute_pipeline()
   ├── WriterAgent.execute() — RAG 检索 → Skill 编排 → LLM 生成 → 平台格式化
   │   ├── _enrich_context(topic)   # RAG 检索 + Web 搜索
   │   ├── _build_messages()        # 组装 system + context + user prompt
-  │   └── format_for_platform()    # juejin / zhihu / twitter 格式适配
+  │   └── format_for_platform()    # juejin / zhihu / devto 格式适配
   │
   └── PublisherAgent.execute() — 内容验证 → 各平台适配器 → 记录结果
 ```
@@ -129,7 +129,7 @@ data/         运行时数据（chroma 向量库 / 日志）
 
 - **掘金**: Cookie 认证（`authenticate()` 时验证）。API 发文章需 title，沸点无需
 - **知乎**: Playwright 浏览器自动化，Cookie 持久化，随机延迟反检测（需要在有 GUI 的环境首次配置 Cookie）
-- **X/Twitter**: Tweepy OAuth 1.0a，Week 2 接入
+- **Dev.to**: Forem API，API key 认证
 
 ## Testing
 
@@ -160,7 +160,7 @@ data/         运行时数据（chroma 向量库 / 日志）
 
 | 任务 | 优先级 | 说明 |
 |------|--------|------|
-| 🐦 Twitter/X 适配器 | 📅 Week 2 | Tweepy OAuth 1.0a，发推/发线程，集成到 Publisher |
+| 🌐 Dev.to 适配器 | ✅ 已完成 | Forem API，发文章，集成到 Publisher |
 | 🔮 MCP 协议 | 🔮 v2 | 架构已预留 |
 
 ### 下一步行动计划（2026-07-16 制定）
@@ -173,10 +173,10 @@ data/         运行时数据（chroma 向量库 / 日志）
 - 先在掘金 dry-run，确认无误后正式发布
 - 目的：验证 mock 测试覆盖不到的真实环境问题
 
-**Step 2: 🐦 Twitter/X 适配器**
-- Tweepy OAuth 1.0a 认证
-- 实现 `TwitterAdapter(BasePlatformAdapter)`
-- 发推 / 发线程 / 媒体上传
+**Step 2: 🌐 Dev.to 适配器** (已完成)
+- Forem API 认证
+- 实现 `DevToAdapter(BasePlatformAdapter)`
+- 发文章 / Markdown 支持
 - 集成到 Publisher Agent + CLI
 
 **Step 3: 🔮 MCP 协议**
