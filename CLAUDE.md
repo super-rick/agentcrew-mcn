@@ -96,7 +96,7 @@ CLI → Orchestrator.execute_pipeline()
 ### RAG 模块
 
 ```
-rag/embedder.py     — DeepSeek Embedding API（Week 1）/ BGE 本地（Week 2 预留）
+rag/embedder.py     — OpenAIEmbedder（OpenAI 兼容）+ create_embedder 工厂（多协议可扩展）
 rag/knowledge_base.py — ChromaDB 封装（add_documents/search/get_stats）
 rag/retriever.py    — 检索管道（retrieve_for_writing/format_context）
 ```
@@ -151,9 +151,9 @@ data/         运行时数据（chroma 向量库 / 日志）
 | Analyst Agent | ✅ v0.2 | 效果分析（读取 post_history.json，report/recommend/rank），21 个测试通过 |
 | 掘金适配器 | ✅ | Cookie 认证，API 发文章/沸点 |
 | 知乎适配器 | ✅ | Playwright 浏览器自动化，Cookie 持久化 |
-| RAG 模块 | ✅ | DeepSeek Embedding + ChromaDB，6 个测试通过 |
+| RAG 模块 | ✅ v0.2 | OpenAIEmbedder（通用 OpenAI 兼容）+ create_embedder 工厂，硅基流动 BGE 模型，9 个测试通过 |
 | CLI 命令 | ✅ | write / publish / schedule / rag 四组命令 |
-| 测试套件 | ✅ | 88 passed, 0 failed |
+| 测试套件 | ✅ | 91 passed, 0 failed |
 | Dashboard | ✅ v0.2 | Streamlit Web 面板：总览/发布分析/AI 分析/系统状态 4 页面 |
 
 ### 待开发
@@ -163,7 +163,7 @@ data/         运行时数据（chroma 向量库 / 日志）
 | 🌐 Dev.to 适配器 | ✅ 已完成 | Forem API，发文章，集成到 Publisher |
 | 🔮 MCP 协议 | 🔮 v2 | 架构已预留 |
 
-### 下一步行动计划（2026-07-16 制定）
+### 下一步行动计划（2026-07-17 更新）
 
 > **三步走，按顺序执行：**
 
