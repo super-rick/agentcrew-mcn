@@ -44,6 +44,11 @@ class DevToAdapter(BasePlatformAdapter):
             self._authenticated = False
             return False
 
+        # Close previous client to avoid resource leak on re-auth
+        if self._client is not None:
+            self._client.close()
+            self._client = None
+
         self._client = httpx.Client(
             headers={
                 "api-key": self._api_key,
@@ -79,6 +84,13 @@ class DevToAdapter(BasePlatformAdapter):
                 success=False,
                 platform=self.platform_name,
                 error_message="Dev.to 认证失败，请检查 DEVTO_API_KEY",
+            )
+
+        if self._client is None:
+            return PostResult(
+                success=False,
+                platform=self.platform_name,
+                error_message="Dev.to 客户端未初始化，请先调用 authenticate()",
             )
 
         # Auto-extract tags from hashtags (strip # prefix)

@@ -214,9 +214,8 @@ class ZhihuAdapter(BasePlatformAdapter):
         try:
             await page.evaluate("text => navigator.clipboard.writeText(text)", text)
         except Exception:
-            # Fallback: clipboard API may fail in some headless environments.
-            # Try using keyboard.insert_text as a best-effort alternative.
-            await page.keyboard.insert_text(text)
+            # Fallback: clipboard API may fail in headless environments.
+            # Return False so the caller falls back to keyboard.type().
             return False
 
         await self._random_delay(300, 600)

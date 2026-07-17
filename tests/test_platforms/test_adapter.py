@@ -3,8 +3,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from platforms.base import BasePlatformAdapter, ContentPost, PostResult, PlatformStatus
 from platforms.devto import DevToAdapter
 
@@ -28,12 +26,13 @@ class TestDevToAdapter:
         mock_response = MagicMock()
         mock_response.status_code = 200
 
-        with patch.object(adapter, "_client") as mock_client:
-            mock_client.get.return_value = mock_response
-            adapter._client = mock_client
-            # Directly set to test
-            adapter._api_key = "test-key-123"
-            adapter._authenticated = True
+        with patch("httpx.Client") as mock_httpx:
+            mock_client_instance = MagicMock()
+            mock_client_instance.get.return_value = mock_response
+            mock_httpx.return_value = mock_client_instance
+
+            result = adapter.authenticate()
+            assert result
             assert adapter._authenticated
 
     def test_authentication_failure(self):
