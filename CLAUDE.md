@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 核心叙事：项目自己推广自己（Dogfooding / Meta 闭环）。
 
+路线图详见 [ROADMAP.md](ROADMAP.md)。
+
 ## Commands
 
 ```bash
@@ -178,13 +180,17 @@ data/         运行时数据（chroma 向量库 / 日志）
 | MCP 协议 | ✅ v0.3 | MCP Server + Client，crew_mcp 模块，61 个测试通过 |
 | Dogfooding | ✅ | 掘金文章已发布：juejin.cn/post/7663435750386303027 |
 
-### 待开发
+### 待开发（详见 ROADMAP.md）
 
 | 任务 | 优先级 | 说明 |
 |------|--------|------|
-| 🌐 Dev.to 适配器 | ✅ 已完成 | Forem API |
-| 🍽️ Dogfooding | ✅ 已完成 | 真实全流程测试 |
-| 🔮 MCP 协议 | ✅ 已完成 | crew_mcp 模块 |
+| 🛡️ Reviewer Agent | 🔴 高 | v0.3 — 发布前内容安全审核 |
+| 🔄 错误重试机制 | 🔴 高 | v0.3 — 指数退避，提升发布成功率 |
+| 💾 持久化调度器 | 🔴 高 | v0.3 — SQLite 存储，重启不丢失任务 |
+| 🐳 Docker 部署 | 🟡 中 | v0.3 — Dockerfile + docker-compose |
+| 🧠 动态 Skill 编排 | 🟡 中 | v0.4 — LLM 自主选择 Tool 调用顺序 |
+| 🔌 多模型 Provider | 🟡 中 | v0.4 — DeepSeek/OpenAI/Anthropic/Ollama |
+| 🖼️ 图片生成 | 🟢 低 | v0.4 — DALL-E / Stability AI 封面图 |
 
 ### 已知问题 / Known Issues
 
@@ -194,11 +200,12 @@ data/         运行时数据（chroma 向量库 / 日志）
 | CLI spinner + ChromaDB | `rag ingest` 命令在 Rich spinner 内可能超时 | 小文件可用，大文件建议分批代码方式 |
 | Dev.to API key | .env 中 DEVTO_API_KEY 认证失败 | 待排查 key 有效性 |
 
-### 下一步行动计划（2026-07-18 更新）
+### 下一步行动计划（2026-07-19 更新）
 
-> **三步走已完成 ✅，下一步：reliability + ecosystem**
+> **详细路线图见 [ROADMAP.md](ROADMAP.md)。当前优先：v0.3 可靠性加固。**
 
-- 🐛 修复已知问题（RAG 批量嵌入、CLI spinner 兼容性）
-- 📊 Dashboard 增强：接入 MCP 状态展示
-- 🌍 更多平台评估：CSDN、SegmentFault
-- 📦 社区推广：用刚发布的掘金文章引流
+- 🛡️ **v0.3 可靠性**: Reviewer Agent + 重试机制 + 持久化调度 + Docker
+- 🧠 **v0.4 智能**: 动态 Skill 编排 + 多模型 Provider + 图片生成
+- 🌍 **v0.5 平台扩展**: CSDN、微信公众平台、X (Twitter)
+- 🏗️ **v1.0 平台化**: Web API + 用户系统 + 插件市场
+- 💰 **v2.0 商业化**: SaaS + 付费计划 + 企业特性
