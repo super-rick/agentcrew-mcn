@@ -37,6 +37,12 @@ python -m cli.main rag stats
 # Dashboard
 streamlit run dashboard/app.py
 
+# MCP
+python -m cli.main mcp serve
+python -m cli.main mcp serve --transport sse --port 8090
+python -m cli.main mcp list-tools
+python -m cli.main mcp status
+
 # 测试
 python -m pytest tests/ -v
 python -m pytest tests/test_agents/test_writer.py -v
@@ -153,19 +159,19 @@ data/         运行时数据（chroma 向量库 / 日志）
 | 知乎适配器 | ✅ | Playwright 浏览器自动化，Cookie 持久化 |
 | RAG 模块 | ✅ v0.2 | OpenAIEmbedder（通用 OpenAI 兼容）+ create_embedder 工厂，硅基流动 BGE 模型，9 个测试通过 |
 | CLI 命令 | ✅ | write / publish / schedule / rag 四组命令 |
-| 测试套件 | ✅ | 91 passed, 0 failed |
+| 测试套件 | ✅ | 164 passed, 0 failed |
 | Dashboard | ✅ v0.2 | Streamlit Web 面板：总览/发布分析/AI 分析/系统状态 4 页面 |
+| MCP 协议 | ✅ v0.3 | MCP Server + Client，crew_mcp 模块，61 个测试通过 |
 
 ### 待开发
 
 | 任务 | 优先级 | 说明 |
 |------|--------|------|
 | 🌐 Dev.to 适配器 | ✅ 已完成 | Forem API，发文章，集成到 Publisher |
-| 🔮 MCP 协议 | 🔮 v2 | 架构已预留 |
 
-### 下一步行动计划（2026-07-17 更新）
+### 下一步行动计划（2026-07-18 更新）
 
-> **三步走，按顺序执行：**
+> **MCP 协议已实现 ✅，下一步：真实全流程测试（Dogfooding）**
 
 **Step 1: 🍽️ Dogfooding — 跑通真实全流程**
 - 用 AgentCrew MCN 写一篇推广自己的技术文章
@@ -173,12 +179,8 @@ data/         运行时数据（chroma 向量库 / 日志）
 - 先在掘金 dry-run，确认无误后正式发布
 - 目的：验证 mock 测试覆盖不到的真实环境问题
 
-**Step 2: 🌐 Dev.to 适配器** (已完成)
-- Forem API 认证
-- 实现 `DevToAdapter(BasePlatformAdapter)`
-- 发文章 / Markdown 支持
-- 集成到 Publisher Agent + CLI
-
-**Step 3: 🔮 MCP 协议**
-- 为 Agent 提供 MCP 工具接入能力
-- 架构已预留，按 v2 计划升级
+**Step 2: 🌐 Dev.to 适配器** ✅ 已完成
+**Step 3: 🔮 MCP 协议** ✅ 已完成
+- crews_mcp 模块：MCP Server + MCP Client
+- CLI: `mcp serve`, `mcp list-tools`, `mcp status`
+- 61 个 MCP 测试通过

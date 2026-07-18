@@ -70,11 +70,17 @@ class BaseAgent(ABC):
     name: str = "base"
     description: str = "Base agent"
 
-    def __init__(self, llm_client: LLMClient, config: dict | None = None):
+    def __init__(
+        self,
+        llm_client: LLMClient,
+        config: dict | None = None,
+        tool_registry=None,
+        skill_registry=None,
+    ):
         self.llm_client = llm_client
         self.config = config or {}
-        self._tool_registry = None  # Set by ToolRegistry injection
-        self._skill_registry = None  # Set by SkillRegistry injection
+        self._tool_registry = tool_registry
+        self._skill_registry = skill_registry
 
     @property
     def tool_registry(self):

@@ -38,6 +38,7 @@ dependencies = [
     "plotly>=5.0.0",
     "markdown>=3.5.0",
     "pygments>=2.17.0",
+    "mcp>=1.0.0",
 ]
 
 [project.scripts]
@@ -50,7 +51,7 @@ Homepage = "https://github.com/super-rick/agentcrew-mcn"
 "Source" = "https://github.com/super-rick/agentcrew-mcn"
 
 [tool.setuptools.packages.find]
-include = ["agents*", "cli*", "llm*", "orchestrator*", "platforms*", "rag*", "dashboard*"]
+include = ["agents*", "cli*", "llm*", "mcp*", "orchestrator*", "platforms*", "rag*", "dashboard*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.yaml", "*.yml", "*.json", "*.md"]
@@ -60,6 +61,10 @@ include = ["agents*", "cli*", "llm*", "orchestrator*", "platforms*", "rag*", "da
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 pythonpath = ["."]
+asyncio_mode = "auto"
+markers = [
+    "asyncio: mark a test as an asyncio async test",
+]
 
 [tool.ruff]
 target-version = "py310"

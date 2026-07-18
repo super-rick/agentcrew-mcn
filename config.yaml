@@ -51,3 +51,37 @@ orchestrator:
 logging:
   level: INFO
   file: data/logs/agentcrew-mcn.log
+
+
+# ============================================================
+# MCP (Model Context Protocol) Configuration
+# ============================================================
+# MCP allows AgentCrew to:
+#   - Expose tools as an MCP server (for Claude Desktop, Continue, etc.)
+#   - Connect to external MCP servers to extend agent capabilities
+
+mcp:
+  # Server: expose AgentCrew tools to external AI apps
+  server:
+    enabled: false              # Set true to start MCP server via `agentcrew-mcn mcp serve`
+    transport: stdio            # stdio (recommended for desktop apps) | sse
+    host: 127.0.0.1             # for SSE transport
+    port: 8090                  # for SSE transport
+
+  # Clients: connect to external MCP servers (experimental)
+  # Tools from these servers are auto-discovered and injected into WriterAgent
+  clients: []
+  # Example stdio client:
+  #   - name: "filesystem"
+  #     transport: stdio
+  #     command: "npx"
+  #     args: ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/docs"]
+  #     env:
+  #       CUSTOM_VAR: value
+  #
+  # Example SSE client:
+  #   - name: "weather"
+  #     transport: sse
+  #     url: "https://weather-mcp.example.com/sse"
+  #     headers:
+  #       Authorization: "Bearer ${TOKEN}"

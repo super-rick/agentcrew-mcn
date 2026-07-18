@@ -40,13 +40,13 @@ _Planning. Targeting Q4 2026._
 - [ ] **Analytics v2** — Engagement tracking, trend detection, keyword optimization
 - [ ] **Config Wizard** — Interactive `init` command with guided setup
 
-## v1.0 — MCP & Community 🔮
+## v1.0 — MCP & Community 🔧
 
-_Long-term. Targeting 2027._
+_In progress. Accelerated to Q3 2026._
 
-- [ ] **MCP Protocol** — Model Context Protocol for tool access
-  - MCP Server: expose AgentCrew tools to other AI apps
-  - MCP Client: connect external tools into AgentCrew agents
+- [x] **MCP Protocol** — Model Context Protocol for tool access
+  - MCP Server: expose AgentCrew tools to other AI apps ✅
+  - MCP Client: connect external tools into AgentCrew agents ✅
 - [ ] **Plugin System** — Community-built platform adapters and skills
 - [ ] **Web UI** — Beyond dashboard: full web-based content management
 - [ ] **Multi-User Support** — Team collaboration on content pipelines

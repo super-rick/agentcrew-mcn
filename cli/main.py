@@ -41,6 +41,7 @@ from cli.schedule import schedule_group
 from cli.rag_cmd import rag_group
 from cli.analyst import analyst_group
 from cli.init import init_command
+from crew_mcp.cli import mcp_group
 
 
 # --- Config search paths (in priority order, for default config) ---
@@ -114,6 +115,57 @@ def _substitute_env_vars(content: str) -> str:
         return os.environ.get(env_var, "")
 
     return re.sub(r"\$\{(\w+)\}", _replace_env, content)
+
+
+def _init_mcp_clients(config: dict, writer) -> None:
+    """Discover MCP tools from configured external servers and inject them.
+
+    Connects to all configured MCP servers (stdio/SSE), discovers their
+    tools, converts them to AgentCrew Tool format, and registers them
+    in the writer's ToolRegistry. Built-in tools take precedence over
+    MCP-discovered tools with the same name.
+
+    Failures are non-fatal — a warning is logged and the system continues
+    without MCP tools.
+    """
+    from crew_mcp.config import parse_mcp_config
+
+    _, client_configs = parse_mcp_config(config)
+
+    if not client_configs:
+        return
+
+    try:
+        from crew_mcp.client import MCPClientManager
+
+        manager = MCPClientManager(client_configs)
+        mcp_tools = manager.connect_all_sync()
+
+        # Inject MCP tools into writer's ToolRegistry
+        # Skip tools whose names collide with built-in tools
+        builtin_names = set(writer.tool_registry.list_names())
+        skipped = 0
+        for tool in mcp_tools:
+            if tool.name in builtin_names:
+                skipped += 1
+                continue
+            writer.tool_registry.register(tool)
+
+        connected = len(manager.connections)
+        registered = len(mcp_tools) - skipped
+        if connected > 0:
+            console.print(
+                f"[green]✓[/green] MCP: [bold]{connected}[/bold] server(s) connected, "
+                f"[bold]{registered}[/bold] tool(s) registered"
+                + (f" ([dim]{skipped} skipped due to name conflict[/dim])" if skipped else "")
+            )
+    except ImportError:
+        console.print(
+            "[yellow]⚠[/yellow] MCP SDK not installed. "
+            "Run [bold]pip install mcp[/bold] to enable MCP client support."
+        )
+    except Exception as e:
+        console.print(f"[yellow]⚠[/yellow] MCP client init skipped: {e}")
 
 
 def setup_orchestrator(config: dict) -> tuple:
@@ -197,6 +249,9 @@ def setup_orchestrator(config: dict) -> tuple:
         config=config.get("agents", {}).get("analyst", {}),
     )
 
+    # --- MCP Client Integration ---
+    _init_mcp_clients(config, writer)
+
     # --- Orchestrator ---
     orchestrator = Orchestrator(config=config.get("orchestrator", {}))
     orchestrator.register_agent(writer)
@@ -265,6 +320,7 @@ main.add_command(schedule_group, name="schedule")
 main.add_command(rag_group, name="rag")
 main.add_command(analyst_group, name="analyst")
 main.add_command(init_command, name="init")
+main.add_command(mcp_group, name="mcp")
 
 if __name__ == "__main__":
     main()
