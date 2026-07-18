@@ -107,10 +107,24 @@ rag/knowledge_base.py — ChromaDB 封装（add_documents/search/get_stats）
 rag/retriever.py    — 检索管道（retrieve_for_writing/format_context）
 ```
 
+> **注意**: 硅基流动 BGE 模型限制 ~512 tokens/chunk。批量嵌入时需分批（3-5 chunks/次），
+> 避免 payload 过大导致 OOM 或 API 400 错误。CHUNK_SIZE 建议 500-800 字符。
+
+### MCP 模块
+
+```
+crew_mcp/adapter.py  — AgentCrew Tool ↔ MCP tool 格式双向转换
+crew_mcp/server.py   — MCPServer，将 AgentCrew 工具暴露为 MCP Server（stdio/SSE）
+crew_mcp/client.py   — MCPClientManager，连接外部 MCP Server 发现并注入工具
+crew_mcp/config.py   — MCP 配置 dataclass + YAML 解析
+crew_mcp/cli.py      — CLI：mcp serve / list-tools / status
+```
+
 ### 关键目录
 
 ```
 agents/       Agent 实现 + Tool/Skill 系统
+crew_mcp/     MCP 协议（Server + Client + CLI）
 orchestrator/ 任务编排引擎 + 调度器（带随机抖动反检测）
 platforms/    各平台适配器（可插拔）
 rag/          RAG 知识库
@@ -128,7 +142,7 @@ data/         运行时数据（chroma 向量库 / 日志）
 - **CLI**: Click + Rich
 - **配置**: YAML with `${ENV_VAR}` 变量替换
 - **Python 版本**: 3.10+（代码使用 `X | None` 联合类型语法；Python 3.9 需 `from __future__ import annotations`）
-- **MCP**: 架构预留，v2 升级
+- **MCP**: crew_mcp 模块（MCP Server + Client），基于官方 mcp SDK
 - **开发顺序**: CLI 优先，Dashboard 最后
 
 ## Platform Delays
@@ -162,25 +176,29 @@ data/         运行时数据（chroma 向量库 / 日志）
 | 测试套件 | ✅ | 164 passed, 0 failed |
 | Dashboard | ✅ v0.2 | Streamlit Web 面板：总览/发布分析/AI 分析/系统状态 4 页面 |
 | MCP 协议 | ✅ v0.3 | MCP Server + Client，crew_mcp 模块，61 个测试通过 |
+| Dogfooding | ✅ | 掘金文章已发布：juejin.cn/post/7663435750386303027 |
 
 ### 待开发
 
 | 任务 | 优先级 | 说明 |
 |------|--------|------|
-| 🌐 Dev.to 适配器 | ✅ 已完成 | Forem API，发文章，集成到 Publisher |
+| 🌐 Dev.to 适配器 | ✅ 已完成 | Forem API |
+| 🍽️ Dogfooding | ✅ 已完成 | 真实全流程测试 |
+| 🔮 MCP 协议 | ✅ 已完成 | crew_mcp 模块 |
+
+### 已知问题 / Known Issues
+
+| 问题 | 说明 | 影响 |
+|------|------|------|
+| RAG 批量嵌入 OOM | 硅基流动 BGE 模型限制，大批量 chunks 嵌入会超时/OOM | 需分批 3-5 chunks/次 |
+| CLI spinner + ChromaDB | `rag ingest` 命令在 Rich spinner 内可能超时 | 小文件可用，大文件建议分批代码方式 |
+| Dev.to API key | .env 中 DEVTO_API_KEY 认证失败 | 待排查 key 有效性 |
 
 ### 下一步行动计划（2026-07-18 更新）
 
-> **MCP 协议已实现 ✅，下一步：真实全流程测试（Dogfooding）**
+> **三步走已完成 ✅，下一步：reliability + ecosystem**
 
-**Step 1: 🍽️ Dogfooding — 跑通真实全流程**
-- 用 AgentCrew MCN 写一篇推广自己的技术文章
-- `python3 -m cli.main write generate --topic "AI 自动内容营销工具 AgentCrew 实战" --platform juejin --rag`
-- 先在掘金 dry-run，确认无误后正式发布
-- 目的：验证 mock 测试覆盖不到的真实环境问题
-
-**Step 2: 🌐 Dev.to 适配器** ✅ 已完成
-**Step 3: 🔮 MCP 协议** ✅ 已完成
-- crews_mcp 模块：MCP Server + MCP Client
-- CLI: `mcp serve`, `mcp list-tools`, `mcp status`
-- 61 个 MCP 测试通过
+- 🐛 修复已知问题（RAG 批量嵌入、CLI spinner 兼容性）
+- 📊 Dashboard 增强：接入 MCP 状态展示
+- 🌍 更多平台评估：CSDN、SegmentFault
+- 📦 社区推广：用刚发布的掘金文章引流
