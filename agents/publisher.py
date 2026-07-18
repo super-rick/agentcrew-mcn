@@ -216,16 +216,14 @@ class PublisherAgent(BaseAgent):
         dry_run: bool = False,
     ) -> PostResult:
         """Convenience method: post a single text to a single platform."""
-        content = ContentPost(
-            text=text, title=title
-        )  # noqa: F841 (validated, used for consistency)
+        content = ContentPost(text=text, title=title)
         task = Task(
             task_id=f"pub_{datetime.now().timestamp()}",
             task_type="publish",
             params={
                 "content": {
-                    "text": text,
-                    "title": title,
+                    "text": content.text,
+                    "title": content.title,
                 },
                 "platforms": [platform],
                 "dry_run": dry_run,
