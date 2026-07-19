@@ -164,6 +164,94 @@ class Orchestrator:
                         agent_name="publisher",
                     )
 
+            elif task.task_type == "write_review_publish":
+                # Step 1: Writer generates content
+                writer = self.agents["writer"]
+                write_task = Task(
+                    task_id=f"{task.task_id}_write",
+                    task_type="write",
+                    params=task.params,
+                )
+                write_result = writer.execute(write_task)
+                results["writer"] = write_result
+
+                if not write_result.success:
+                    results["reviewer"] = TaskResult(
+                        task_id=f"{task.task_id}_review",
+                        success=False,
+                        error_message="Skipped: writer agent failed",
+                        agent_name="reviewer",
+                    )
+                    results["publisher"] = TaskResult(
+                        task_id=f"{task.task_id}_pub",
+                        success=False,
+                        error_message="Skipped: writer agent failed",
+                        agent_name="publisher",
+                    )
+                else:
+                    # Step 2: Reviewer checks content safety and quality
+                    reviewer = self.agents["reviewer"]
+                    content_data = write_result.data
+                    platform = task.params.get("platform", "generic")
+                    review_task = Task(
+                        task_id=f"{task.task_id}_review",
+                        task_type="review",
+                        params={
+                            "content": {
+                                "title": content_data.get("topic", ""),
+                                "text": content_data.get(
+                                    "formatted_content", content_data.get("raw_content", "")
+                                ),
+                            },
+                            "platform": platform,
+                        },
+                    )
+                    review_result = reviewer.execute(review_task)
+                    results["reviewer"] = review_result
+
+                    if not review_result.success or not review_result.data.get("review_passed", False):
+                        # Review failed — skip publishing
+                        results["publisher"] = TaskResult(
+                            task_id=f"{task.task_id}_pub",
+                            success=False,
+                            error_message=(
+                                "Skipped: content did not pass review"
+                                if review_result.success
+                                else "Skipped: reviewer agent failed"
+                            ),
+                            agent_name="publisher",
+                        )
+                    else:
+                        # Step 3: Publisher distributes the approved content
+                        publisher = self.agents["publisher"]
+                        publish_task = Task(
+                            task_id=f"{task.task_id}_pub",
+                            task_type="publish",
+                            params={
+                                "content": {
+                                    "text": content_data.get(
+                                        "formatted_content", content_data.get("raw_content", "")
+                                    ),
+                                    "title": (
+                                        content_data.get("topic", "")
+                                        if task.params.get("platform") != "zhihu"
+                                        else f"关于 {task.params.get('topic', '')} 的分享"
+                                    ),
+                                },
+                                "platforms": task.params.get(
+                                    "platforms", publisher.config.get("default_platforms", [])
+                                ),
+                                "dry_run": task.params.get("dry_run", False),
+                            },
+                        )
+                        pub_result = publisher.execute(publish_task)
+                        results["publisher"] = pub_result
+
+            elif task.task_type == "review":
+                agent = self.agents["reviewer"]
+                result = agent.execute(task)
+                results["reviewer"] = result
+
             elif task.task_type == "schedule":
                 # Schedule is handled by Scheduler, just ack
                 pass
@@ -239,6 +327,8 @@ class Orchestrator:
             "write": ["writer"],
             "publish": ["publisher"],
             "write_and_publish": ["writer", "publisher"],
+            "write_review_publish": ["writer", "reviewer", "publisher"],
+            "review": ["reviewer"],
             "analyst": ["analyst"],
             "schedule": [],
         }
