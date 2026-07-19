@@ -134,6 +134,21 @@ agentcrew-mcn rag search --query "AI Agent architecture"
 └─────────┘ └─────────┘ └───────────┘
 ```
 
+## Dashboard
+
+AgentCrew includes a **Streamlit Dashboard** for monitoring your AI marketing team.
+
+![Dashboard Overview](screenshots/dashboard-overview.png)
+
+<details>
+<summary>More Dashboard Pages</summary>
+
+| Publish Analysis | AI Analysis |
+|:-:|:-:|
+| ![Publishing](screenshots/dashboard-publishing.png) | ![Analytics](screenshots/dashboard-analytics.png) |
+
+</details>
+
 ## Tech Stack
 
 | Component | Technology |

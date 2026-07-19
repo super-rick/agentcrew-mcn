@@ -132,6 +132,21 @@ agentcrew-mcn rag search --query "AI Agent 架构"
 └─────────┘ └─────────┘ └───────────┘
 ```
 
+## Dashboard
+
+AgentCrew 内置了 **Streamlit Dashboard**，用于监控 AI 营销团队。
+
+![Dashboard Overview](screenshots/dashboard-overview.png)
+
+<details>
+<summary>更多 Dashboard 页面</summary>
+
+| 发布分析 | AI 分析 |
+|:-:|:-:|
+| ![发布分析](screenshots/dashboard-publishing.png) | ![AI 分析](screenshots/dashboard-analytics.png) |
+
+</details>
+
 ## 技术栈
 
 | 组件 | 技术 |
