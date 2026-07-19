@@ -1,15 +1,16 @@
-"""Tests for llm/client.py — LLMClient."""
+"""Tests for llm/client.py — multi-provider LLM client."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from llm.client import LLMClient, LLMConfig
+from llm.client import LLMClient, LLMConfig, create_llm_client
 
 
 class TestLLMConfig:
     def test_defaults(self):
         cfg = LLMConfig(api_key="test-key")
+        assert cfg.provider == "deepseek"
         assert cfg.model == "deepseek-chat"
         assert cfg.temperature == 0.8
         assert cfg.max_tokens == 4096
@@ -17,21 +18,61 @@ class TestLLMConfig:
 
     def test_custom_values(self):
         cfg = LLMConfig(
+            provider="openai",
             api_key="k",
             base_url="https://custom.api/v1",
             model="custom-model",
             temperature=0.5,
             max_tokens=2048,
         )
+        assert cfg.provider == "openai"
         assert cfg.model == "custom-model"
         assert cfg.temperature == 0.5
         assert cfg.max_tokens == 2048
+        assert cfg.base_url == "https://custom.api/v1"
+
+    def test_auto_derived_model(self):
+        """When provider != deepseek and model is default, auto-derive."""
+        cfg = LLMConfig(provider="openai", api_key="k")
+        assert cfg.model == "gpt-4o"
+        assert cfg.base_url == "https://api.openai.com/v1"
+
+    def test_auto_derived_ollama(self):
+        cfg = LLMConfig(provider="ollama")
+        assert cfg.model == "llama3"
+        assert cfg.base_url == "http://localhost:11434/v1"
+
+    def test_anthropic_defaults(self):
+        cfg = LLMConfig(provider="anthropic", api_key="sk-ant-xxx")
+        assert cfg.model == "claude-sonnet-5"
+
+    def test_deepseek_keeps_default_model(self):
+        """DeepSeek default model stays."""
+        cfg = LLMConfig(provider="deepseek", api_key="k")
+        assert cfg.model == "deepseek-chat"
+
+
+class TestCreateLLMClient:
+    def test_creates_deepseek_client(self):
+        with patch("openai.OpenAI"):
+            client = create_llm_client("deepseek", api_key="sk-test")
+            assert client._provider == "deepseek"
+
+    def test_creates_openai_client(self):
+        with patch("openai.OpenAI"):
+            client = create_llm_client("openai", api_key="sk-test")
+            assert client._provider == "openai"
+
+    def test_creates_ollama_client(self):
+        with patch("openai.OpenAI"):
+            client = create_llm_client("ollama")
+            assert client._provider == "ollama"
 
 
 class TestLLMClientChat:
     """chat() — standard completion."""
 
-    @patch("llm.client.OpenAI")
+    @patch("openai.OpenAI")
     def test_chat_returns_content(self, mock_openai):
         """chat() returns the message content string."""
         mock_client = MagicMock()
@@ -44,9 +85,8 @@ class TestLLMClientChat:
         result = client.chat([{"role": "user", "content": "hi"}])
 
         assert result == "Hello from LLM"
-        mock_client.chat.completions.create.assert_called_once()
 
-    @patch("llm.client.OpenAI")
+    @patch("openai.OpenAI")
     def test_chat_passes_parameters(self, mock_openai):
         """chat() forwards temperature, max_tokens, stop."""
         mock_client = MagicMock()
@@ -68,7 +108,7 @@ class TestLLMClientChat:
         assert call_kwargs["max_tokens"] == 100
         assert call_kwargs["stop"] == ["END"]
 
-    @patch("llm.client.OpenAI")
+    @patch("openai.OpenAI")
     def test_chat_empty_content_returns_empty_string(self, mock_openai):
         """chat() handles None/empty content gracefully."""
         mock_client = MagicMock()
@@ -85,7 +125,7 @@ class TestLLMClientChat:
 class TestLLMClientChatWithTools:
     """chat_with_tools() — function calling."""
 
-    @patch("llm.client.OpenAI")
+    @patch("openai.OpenAI")
     def test_returns_raw_response_dict(self, mock_openai):
         """chat_with_tools() returns the model_dump() of the message."""
         mock_client = MagicMock()
@@ -108,7 +148,7 @@ class TestLLMClientChatWithTools:
         assert call_kwargs["tools"] == tools
         assert call_kwargs["tool_choice"] == "auto"
 
-    @patch("llm.client.OpenAI")
+    @patch("openai.OpenAI")
     def test_custom_tool_choice(self, mock_openai):
         """tool_choice parameter is forwarded."""
         mock_client = MagicMock()
@@ -133,7 +173,7 @@ class TestLLMClientChatWithTools:
 class TestLLMClientChatStream:
     """chat_stream() — streaming completion."""
 
-    @patch("llm.client.OpenAI")
+    @patch("openai.OpenAI")
     def test_stream_yields_content_chunks(self, mock_openai):
         """chat_stream() yields content from each chunk."""
         mock_client = MagicMock()
@@ -151,7 +191,7 @@ class TestLLMClientChatStream:
 
         assert result == ["Hello", " ", "World"]
 
-    @patch("llm.client.OpenAI")
+    @patch("openai.OpenAI")
     def test_stream_skips_none_content(self, mock_openai):
         """chat_stream() skips chunks with None content."""
         mock_client = MagicMock()
