@@ -10,6 +10,8 @@ from agents.base import BaseAgent, Task, TaskResult
 class TestAgent(BaseAgent):
     """Concrete test agent for testing BaseAgent."""
 
+    __test__ = False  # Not a pytest test class, just a test helper
+
     name = "test_agent"
     description = "A test agent"
 
