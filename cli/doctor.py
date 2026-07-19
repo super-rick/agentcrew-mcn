@@ -14,17 +14,15 @@ from __future__ import annotations
 
 import json
 import os
-import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
 
 import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from cli.i18n import _, get_locale
+from cli.i18n import _
 
 console = Console()
 
@@ -165,7 +163,11 @@ def _check_llm(config: dict) -> CheckResult:
             return CheckResult(
                 name=name,
                 status="error",
-                message=_("doctor.llm_auth_failed", error=f"HTTP {resp.status_code}", url="https://platform.deepseek.com"),
+                message=_(
+                    "doctor.llm_auth_failed",
+                    error=f"HTTP {resp.status_code}",
+                    url="https://platform.deepseek.com",
+                ),
             )
     except Exception as e:
         # Network error — key might still be valid, just can't verify
@@ -208,13 +210,21 @@ def _check_platform(name: str, adapter_class, config: dict) -> CheckResult:
             return CheckResult(
                 name=name,
                 status="error",
-                message=_("doctor.platform_auth_failed", error=msg, fix=f"Run: agentcrew-mcn auth {name}"),
+                message=_(
+                    "doctor.platform_auth_failed",
+                    error=msg,
+                    fix=f"Run: agentcrew-mcn auth {name}",
+                ),
             )
     except Exception as e:
         return CheckResult(
             name=name,
             status="error",
-            message=_("doctor.platform_auth_failed", error=str(e), fix=f"Run: agentcrew-mcn auth {name}"),
+            message=_(
+                "doctor.platform_auth_failed",
+                error=str(e),
+                fix=f"Run: agentcrew-mcn auth {name}",
+            ),
         )
 
 
@@ -242,24 +252,32 @@ def _check_rag(config: dict) -> CheckResult:
         import asyncio
 
         try:
-            loop = asyncio.get_running_loop()
+            asyncio.get_running_loop()
             return CheckResult(name=name, status="ok", message=_("doctor.rag_ok"))
         except RuntimeError:
             # Test sync if possible
             try:
-                _ = embedder.embed("test")
+                embedder.embed("test")
                 return CheckResult(name=name, status="ok", message=_("doctor.rag_ok"))
             except Exception as e:
                 return CheckResult(
                     name=name,
                     status="warning",
-                    message=_("doctor.rag_failed", error=str(e)[:80], fix="Check your embedding provider API key"),
+                    message=_(
+                        "doctor.rag_failed",
+                        error=str(e)[:80],
+                        fix="Check your embedding provider API key",
+                    ),
                 )
     except ValueError as e:
         return CheckResult(
             name=name,
             status="warning",
-            message=_("doctor.rag_failed", error=str(e)[:80], fix="Set rag.embedding.provider in config.yaml"),
+            message=_(
+                "doctor.rag_failed",
+                error=str(e)[:80],
+                fix="Set rag.embedding.provider in config.yaml",
+            ),
         )
     except ImportError:
         return CheckResult(
@@ -375,7 +393,9 @@ def _dir_size(path: Path) -> int:
 # ── Collector & Runner ───────────────────────────────────────
 
 
-def _collect_checks(config: dict, config_path: Path | None, quick: bool = False) -> list[CheckResult]:
+def _collect_checks(
+    config: dict, config_path: Path | None, quick: bool = False
+) -> list[CheckResult]:
     """Collect and run all health checks."""
     results: list[CheckResult] = []
 
@@ -394,12 +414,15 @@ def _collect_checks(config: dict, config_path: Path | None, quick: bool = False)
     plat_cfg = config.get("platforms", {})
     if "juejin" in plat_cfg:
         from platforms.juejin import JuejinAdapter
+
         results.append(_check_platform("juejin", JuejinAdapter, config))
     if "zhihu" in plat_cfg:
         from platforms.zhihu import ZhihuAdapter
+
         results.append(_check_platform("zhihu", ZhihuAdapter, config))
     if "devto" in plat_cfg:
         from platforms.devto import DevToAdapter
+
         results.append(_check_platform("devto", DevToAdapter, config))
 
     results.append(_check_rag(config))
@@ -450,9 +473,7 @@ def _render_rich(results: list[CheckResult]) -> None:
     if problems == 0:
         console.print(f"[green]{_('doctor.summary_ok')}[/green]")
     else:
-        console.print(
-            f"[yellow]{_('doctor.summary', problems=problems, fatal=fatal)}[/yellow]"
-        )
+        console.print(f"[yellow]{_('doctor.summary', problems=problems, fatal=fatal)}[/yellow]")
     console.print()
 
 

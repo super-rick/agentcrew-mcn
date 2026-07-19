@@ -150,9 +150,13 @@ def _init_mcp_clients(config: dict, writer) -> None:
         registered = len(mcp_tools) - skipped
         if connected > 0:
             skipped_str = _("ok.mcp_skipped_conflict", count=skipped) if skipped else ""
-            console.print(
-                f"[green]{_('ok.mcp_connected', count=connected, tools=registered, skipped=skipped_str)}[/green]"
+            msg = _(
+                "ok.mcp_connected",
+                count=connected,
+                tools=registered,
+                skipped=skipped_str,
             )
+            console.print(f"[green]{msg}[/green]")
     except ImportError:
         console.print(f"[yellow]{_('warn.mcp_not_installed')}[/yellow]")
     except Exception as e:
@@ -235,7 +239,10 @@ def setup_orchestrator(config: dict) -> tuple:
 
                 publisher.register_platform(platform_name, DevToAdapter(plat_cfg))
         except ImportError as e:
-            console.print(f"  [yellow][WARN][/yellow] {_('warn.platform_not_loaded', name=platform_name, error=e)}")
+            console.print(
+                f"  [yellow][WARN][/yellow] "
+                f"{_('warn.platform_not_loaded', name=platform_name, error=e)}"
+            )
 
     # --- Analyst Agent ---
     analyst = AnalystAgent(
@@ -312,7 +319,11 @@ def main(ctx, config, lang):
             # Detect common errors and provide better messages
             if "api_key" in error_msg.lower() or "Missing credentials" in error_msg:
                 console.print(
-                    _("error.no_api_key", key_name="DEEPSEEK_API_KEY", provider_url="https://platform.deepseek.com")
+                    _(
+                        "error.no_api_key",
+                        key_name="DEEPSEEK_API_KEY",
+                        provider_url="https://platform.deepseek.com",
+                    )
                 )
             else:
                 console.print(_("error.init_failed", error=error_msg))

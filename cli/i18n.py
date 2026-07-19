@@ -67,8 +67,7 @@ def set_locale(locale: str) -> None:
     locale = locale.lower()[:2]
     if locale not in SUPPORTED_LOCALES:
         raise ValueError(
-            f"Unsupported locale '{locale}'. "
-            f"Supported: {', '.join(sorted(SUPPORTED_LOCALES))}"
+            f"Unsupported locale '{locale}'. " f"Supported: {', '.join(sorted(SUPPORTED_LOCALES))}"
         )
     _locale = locale
 

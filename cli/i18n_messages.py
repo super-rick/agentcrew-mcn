@@ -21,14 +21,14 @@ MESSAGES: dict[str, dict | str] = {
             "AgentCrew MCN — AI MCN 自动推广工具。\n\n"
             "你的 AI 营销团队，24 小时在线工作，不领工资。\n\n"
             "使用方式:\n"
-            "    agentcrew-mcn write generate --topic \"主题\"\n"
-            "    agentcrew-mcn publish post --content \"内容\" --platform juejin\n"
+            '    agentcrew-mcn write generate --topic "主题"\n'
+            '    agentcrew-mcn publish post --content "内容" --platform juejin\n'
             "    agentcrew-mcn schedule start --topic-file topics.txt\n"
             "    agentcrew-mcn rag ingest --file document.md\n\n"
             "首次使用:\n"
             "    agentcrew-mcn init          # 创建配置文件模板\n"
             "    # 编辑 .env，填入 API Key\n"
-            "    agentcrew-mcn write generate --topic \"Hello World\""
+            '    agentcrew-mcn write generate --topic "Hello World"'
         ),
         "en": (
             "AgentCrew MCN — AI-powered content marketing automation.\n\n"
@@ -53,7 +53,10 @@ MESSAGES: dict[str, dict | str] = {
     # ============================================================
     "error.init_failed": {
         "zh": "❌ 初始化失败: {error}\n💡 提示: 检查 config.yaml 和 .env 设置",
-        "en": "❌ Initialization failed: {error}\n💡 Hint: Check your config.yaml and .env settings",
+        "en": (
+            "❌ Initialization failed: {error}\n"
+            "💡 Hint: Check your config.yaml and .env settings"
+        ),
     },
     "error.no_api_key": {
         "zh": (
@@ -107,15 +110,24 @@ MESSAGES: dict[str, dict | str] = {
     },
     "warn.mcp_not_installed": {
         "zh": "⚠ MCP SDK 未安装。运行 [bold]pip install mcp[/bold] 以启用 MCP 客户端支持。",
-        "en": "⚠ MCP SDK not installed. Run [bold]pip install mcp[/bold] to enable MCP client support.",
+        "en": (
+            "⚠ MCP SDK not installed. "
+            "Run [bold]pip install mcp[/bold] to enable MCP client support."
+        ),
     },
     "warn.platform_not_loaded": {
         "zh": "  ⚠ 平台 '{name}' 未加载: {error}",
         "en": "  ⚠ Platform '{name}' not loaded: {error}",
     },
     "ok.mcp_connected": {
-        "zh": "✓ MCP: [bold]{count}[/bold] 个服务器已连接, [bold]{tools}[/bold] 个工具已注册{skipped}",
-        "en": "✓ MCP: [bold]{count}[/bold] server(s) connected, [bold]{tools}[/bold] tool(s) registered{skipped}",
+        "zh": (
+            "✓ MCP: [bold]{count}[/bold] 个服务器已连接, "
+            "[bold]{tools}[/bold] 个工具已注册{skipped}"
+        ),
+        "en": (
+            "✓ MCP: [bold]{count}[/bold] server(s) connected, "
+            "[bold]{tools}[/bold] tool(s) registered{skipped}"
+        ),
     },
     "ok.mcp_skipped_conflict": {
         "zh": " ([dim]{count} 个因名称冲突被跳过[/dim])",
@@ -193,7 +205,10 @@ MESSAGES: dict[str, dict | str] = {
     },
     "doctor.summary": {
         "zh": "{problems} 个问题, {fatal} 个致命。运行 agentcrew-mcn init --wizard 可重新配置。",
-        "en": "{problems} issue(s), {fatal} fatal. Run: agentcrew-mcn init --wizard to reconfigure.",
+        "en": (
+            "{problems} issue(s), {fatal} fatal. "
+            "Run: agentcrew-mcn init --wizard to reconfigure."
+        ),
     },
     "doctor.summary_ok": {
         "zh": "🎉 一切正常! 运行 agentcrew-mcn write generate 开始写作。",
@@ -332,8 +347,8 @@ MESSAGES: dict[str, dict | str] = {
             "发布内容到指定平台\n\n"
             "📖 示例:\n"
             '  agentcrew-mcn publish post -t "内容..." -p juejin\n'
-            '  agentcrew-mcn publish post -f article.md -p juejin -p zhihu\n'
-            '  agentcrew-mcn publish post -f article.md -p devto --dry-run\n'
+            "  agentcrew-mcn publish post -f article.md -p juejin -p zhihu\n"
+            "  agentcrew-mcn publish post -f article.md -p devto --dry-run\n"
             '  agentcrew-mcn publish post -t "沸点内容" -p juejin\n\n'
             "💡 带 --title 时发布为文章，不带则发布为短内容/沸点"
         ),
@@ -341,8 +356,8 @@ MESSAGES: dict[str, dict | str] = {
             "Post content to target platforms\n\n"
             "📖 Examples:\n"
             '  agentcrew-mcn publish post -t "Content..." -p devto\n'
-            '  agentcrew-mcn publish post -f article.md -p juejin -p devto\n'
-            '  agentcrew-mcn publish post -f article.md -p devto --dry-run\n'
+            "  agentcrew-mcn publish post -f article.md -p juejin -p devto\n"
+            "  agentcrew-mcn publish post -f article.md -p devto --dry-run\n"
             '  agentcrew-mcn publish post -t "Short post" -p juejin\n\n'
             "💡 With --title: published as article. Without: short post / pin."
         ),
