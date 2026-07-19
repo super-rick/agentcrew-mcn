@@ -251,6 +251,23 @@ class TestPersistentScheduler:
         finally:
             Path(store_path).unlink(missing_ok=True)
 
+    def test_task_store_update_next_run(self):
+        """update_next_run should persist."""
+        store_path = tempfile.NamedTemporaryFile(
+            suffix=".json", delete=False
+        ).name
+        try:
+            from orchestrator.task_store import TaskStore
+
+            store = TaskStore(store_path)
+            store.save_task("s1", "write", "t1", {})
+            new_time = datetime(2026, 8, 1, 12, 0)
+            store.update_next_run("s1", new_time)
+            tasks = store.load_tasks()
+            assert tasks[0]["next_run"] == "2026-08-01T12:00:00"
+        finally:
+            Path(store_path).unlink(missing_ok=True)
+
     def test_get_status(self):
         scheduler = Scheduler()
         scheduler.add_recurring_task(
