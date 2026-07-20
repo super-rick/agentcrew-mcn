@@ -1,4 +1,4 @@
-[:cn: 中文](/zh/platforms/){ .md-button }
+[🇨🇳 中文](/zh/platforms/){ .md-button }
 
 # Platform Setup
 

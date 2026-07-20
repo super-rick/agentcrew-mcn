@@ -1,4 +1,4 @@
-[:cn: 中文](/zh/scheduling/){ .md-button }
+[🇨🇳 中文](/zh/scheduling/){ .md-button }
 
 # Scheduling
 

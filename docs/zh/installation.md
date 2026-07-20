@@ -1,4 +1,4 @@
-[:us: English](/installation/){ .md-button }
+[🇺🇸 English](/installation/){ .md-button }
 
 # 安装配置
 

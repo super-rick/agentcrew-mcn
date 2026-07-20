@@ -1,4 +1,4 @@
-[:us: English](/writing/){ .md-button }
+[🇺🇸 English](/writing/){ .md-button }
 
 # 内容创作
 

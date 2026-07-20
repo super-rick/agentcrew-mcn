@@ -1,4 +1,4 @@
-[:cn: 中文](/zh/cli-reference/){ .md-button }
+[🇨🇳 中文](/zh/cli-reference/){ .md-button }
 
 # CLI Reference
 

@@ -1,4 +1,4 @@
-[:cn: 中文](/zh/faq/){ .md-button }
+[🇨🇳 中文](/zh/faq/){ .md-button }
 
 # FAQ
 

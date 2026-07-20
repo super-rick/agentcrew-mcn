@@ -1,4 +1,4 @@
-[:us: English](/faq/){ .md-button }
+[🇺🇸 English](/faq/){ .md-button }
 
 # 常见问题
 

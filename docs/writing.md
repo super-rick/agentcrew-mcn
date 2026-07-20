@@ -1,4 +1,4 @@
-[:cn: 中文](/zh/writing/){ .md-button }
+[🇨🇳 中文](/zh/writing/){ .md-button }
 
 # Writing Content
 
