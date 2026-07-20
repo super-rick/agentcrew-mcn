@@ -10,6 +10,7 @@
 [![CI](https://github.com/super-rick/agentcrew-mcn/actions/workflows/ci.yml/badge.svg)](https://github.com/super-rick/agentcrew-mcn/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-392%20passed-brightgreen)]()
 [![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://super-rick.github.io/agentcrew-mcn/)
+[![Wiki](https://img.shields.io/badge/wiki-github-lightgrey)](https://github.com/super-rick/agentcrew-mcn/wiki)
 [![Coverage](https://img.shields.io/badge/coverage-85%25-green)]()
 
 </div>
