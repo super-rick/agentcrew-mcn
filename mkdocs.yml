@@ -31,28 +31,6 @@ theme:
     repo: fontawesome/brands/github
 plugins:
   - search
-  - i18n:
-      docs_structure: folder
-      languages:
-        - locale: zh
-          default: true
-          name: 中文
-          build: true
-        - locale: en
-          name: English
-          build: true
-          site_name: "AgentCrew MCN"
-          nav_translations:
-            快速开始: Quick Start
-            安装配置: Installation
-            内容创作: Writing
-            内容审核: Review
-            发布管理: Publishing
-            定时调度: Scheduling
-            平台配置: Platform Setup
-            Dashboard: Dashboard
-            CLI 参考: CLI Reference
-            常见问题: FAQ
 markdown_extensions:
   - admonition
   - pymdownx.highlight
@@ -65,6 +43,7 @@ markdown_extensions:
       permalink: true
 nav:
   - 快速开始: index.md
+  - English: en/index.md
   - 安装配置: installation.md
   - 内容创作: writing.md
   - 内容审核: review.md
