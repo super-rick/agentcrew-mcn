@@ -1,4 +1,4 @@
-[:cn: 中文](/zh/dashboard/){ .md-button }
+[🇨🇳 中文](/zh/dashboard/){ .md-button }
 
 # Dashboard
 

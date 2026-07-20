@@ -1,4 +1,4 @@
-[:us: English](/){ .md-button }
+[🇺🇸 English](/){ .md-button }
 
 # 🤖 AgentCrew MCN
 

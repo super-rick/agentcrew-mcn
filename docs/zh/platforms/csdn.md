@@ -1,4 +1,4 @@
-[:us: English](/platforms/csdn/){ .md-button }
+[🇺🇸 English](/platforms/csdn/){ .md-button }
 
 # CSDN
 

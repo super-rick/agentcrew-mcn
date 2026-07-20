@@ -1,4 +1,4 @@
-[:us: English](/review/){ .md-button }
+[🇺🇸 English](/review/){ .md-button }
 
 # 内容审核
 

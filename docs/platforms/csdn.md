@@ -1,4 +1,4 @@
-[:cn: 中文](/zh/platforms/csdn/){ .md-button }
+[🇨🇳 中文](/zh/platforms/csdn/){ .md-button }
 
 # csdn
 

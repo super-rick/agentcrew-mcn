@@ -1,4 +1,4 @@
-[:us: English](/scheduling/){ .md-button }
+[🇺🇸 English](/scheduling/){ .md-button }
 
 # 定时调度
 

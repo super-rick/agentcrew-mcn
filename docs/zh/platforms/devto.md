@@ -1,4 +1,4 @@
-[:us: English](/platforms/devto/){ .md-button }
+[🇺🇸 English](/platforms/devto/){ .md-button }
 
 # Dev.to
 
